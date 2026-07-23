@@ -69,8 +69,8 @@ no(detail,/\([^)]*:\d|wings?|tails?|horns?|halo|smiling|angry|background|camera/
 no(compact,/iris brightness|hair sheen|lip sheen/,'短縮版が微細タグを省略');
 const custom=CAW.normalizer.normalize(s);custom.customTags.face=['custom detail','gray eyes'];ok(CAW.generator.detailed(custom).endsWith('custom detail'),'追加タグ末尾・重複整理');
 
-let conflict=select(CAW.state.initial(),{hairLength:'short',baseCut:['straight'],bangs:['none','long'],irisPattern:['solid','heterochromia'],hairMulticolor:['none','split']});
-let diagnostics=CAW.advisor.check(conflict);ok(diagnostics.filter(x=>x.level==='hard').length===4,'hard診断');
+let conflict=select(CAW.state.initial(),{hairLength:'short',baseCut:['straight'],bangs:['none','long'],irisPattern:['solid','heterochromia'],hairMulticolor:['none','split'],glassesUsage:'none',glassesShape:'round'});
+let diagnostics=CAW.advisor.check(conflict);ok(diagnostics.filter(x=>x.level==='hard').length===5,'hard診断');
 ok(diagnostics.every((x,i,a)=>a.findIndex(y=>y.id===x.id)===i),'診断重複なし');
 ok(CAW.generator.detailed(conflict).length>0,'診断があっても出力');
 eq(conflict.appearance.bangs,['none','long'],'提案を勝手に適用しない');

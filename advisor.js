@@ -9,6 +9,7 @@
     if(has(s,'bangs','none')&&a.bangs.length>1)out.push(issue('bangs_conflict','hard','前髪の指定が競合しています','「前髪なし」と別の前髪が同時に選ばれています。',{bangs:['none']}));
     if(has(s,'irisPattern','solid')&&(has(s,'irisPattern','heterochromia')||has(s,'irisColor','heterochromatic')))out.push(issue('iris_color_conflict','hard','瞳の配色指定が競合しています','単色とオッドアイの指定をどちらかに絞ってください。'));
     if(has(s,'hairMulticolor','none')&&a.hairMulticolor.length>1)out.push(issue('hair_color_conflict','hard','髪の配色指定が競合しています','単色と複数色の指定が同時に選ばれています。',{hairMulticolor:['none']}));
+    if(has(s,'glassesUsage','none')&&(a.glassesShape||a.frameThickness||a.frameColor||a.lenses))out.push(issue('glasses_state_conflict','hard','メガネの状態が一致していません','「メガネなし」とフレーム・レンズの指定が同時に選ばれています。',{glassesShape:null,frameThickness:null,frameColor:null,lenses:null}));
     if((has(s,'silhouette','petite')||has(s,'silhouette','slender'))&&has(s,'muscle','very_high'))out.push(issue('body_conflict','warning','体格の指定が離れています','華奢・細身と非常に筋肉質は、モデルによって片方が弱くなる場合があります。'));
     if(count>42)out.push(issue('too_many_details','warning','細かな指定が多めです','詳細プロンプトが長く、微細な指定が競合しやすい状態です。'));
     if((a.molePosition.length+a.scarPosition.length)>4)out.push(issue('too_many_marks','warning','固有特徴が多めです','ほくろと傷が多いと、位置や数が不安定になりやすくなります。'));
