@@ -42,6 +42,21 @@
     {id:'color_bright',group:'配色',labelJa:'明るい配色',summaryJa:'プラチナ／空色の瞳',patch:{hairColor:'platinum',irisColor:'sky_blue',irisBrightness:'light'}},
     {id:'color_dark',group:'配色',labelJa:'暗い配色',summaryJa:'黒髪／濃い茶色の瞳',patch:{hairColor:'black',irisColor:'dark_brown',irisBrightness:'dark'}},
     {id:'color_contrast',group:'配色',labelJa:'高コントラスト',summaryJa:'黒髪／銀色の瞳／高コントラスト',patch:{hairColor:'black',irisColor:'silver',impression:['high_contrast']}},
-    {id:'color_pale',group:'配色',labelJa:'淡い配色',summaryJa:'ラベンダー／灰色の瞳／淡い配色',patch:{hairColor:'lavender',irisColor:'gray',hairSaturation:'soft',impression:['soft_coloring']}}
+    {id:'color_pale',group:'配色',labelJa:'淡い配色',summaryJa:'ラベンダー／灰色の瞳／淡い配色',patch:{hairColor:'lavender',irisColor:'gray',hairSaturation:'soft',impression:['soft_coloring']}},
+    {id:'brow_parallel',group:'眉',labelJa:'平行眉',summaryJa:'平行／自然な太さ／自然な濃さ',patch:{browShape:'parallel',browThickness:'medium',browDensity:'natural'}},
+    {id:'brow_worried',group:'眉',labelJa:'困り眉',summaryJa:'眉尻が下がり気味／柔らかい濃さ',patch:{browShape:'worried',browDensity:'light'}},
+    {id:'eyes_vacant',group:'目元',labelJa:'虚ろな目',summaryJa:'半目がち／低彩度／ハイライト少なめ',patch:{eyeShape:['half_lidded'],eyeImpression:['vacant'],irisSaturation:'muted',eyeHighlights:'minimal'}},
+    {id:'eyes_lifeless',group:'目元',labelJa:'生気のない目',summaryJa:'暗い瞳／低彩度／ハイライトなし',patch:{eyeImpression:['lifeless'],irisBrightness:'dark',irisSaturation:'muted',eyeHighlights:'none'}},
+    {id:'eyes_minimal_highlight',group:'目元',labelJa:'ハイライト少なめ',summaryJa:'自然な目元／ハイライト少なめ',patch:{eyeHighlights:'minimal'}},
+    {id:'eyes_no_highlight',group:'目元',labelJa:'ハイライトなし',summaryJa:'ハイライトなし／低彩度',patch:{eyeHighlights:'none',irisSaturation:'muted'}},
+    {id:'eyes_heavy_half',group:'目元',labelJa:'重い半目',summaryJa:'半目がち／重い上まぶた／奥二重',patch:{eyeShape:['half_lidded'],upperEyelid:['heavy'],eyelidFold:'hidden_double'}},
+    {id:'hair_classic_center',group:'髪型',labelJa:'王道センターパート',summaryJa:'短髪／センターパート／顔周りの毛束',patch:{hairLength:'short',parting:'center',baseCut:['layered_short'],sideHair:['face_framing']}},
+    {id:'hair_long_layers',group:'髪型',labelJa:'長めレイヤー',summaryJa:'胸上まで／ロングレイヤー／顔周りの毛束',patch:{hairLength:'medium',baseCut:['layered_long'],sideHair:['face_framing']}},
+    {id:'body_tall_slender',group:'体格',labelJa:'細身長身',summaryJa:'高身長／細身／肩幅狭め',patch:{height:'tall',silhouette:'slender',muscle:'low',shoulders:'narrow'}},
+    {id:'body_small_petite',group:'体格',labelJa:'小柄で華奢',summaryJa:'小柄／華奢／肩幅狭め',patch:{height:'short',silhouette:'petite',muscle:'very_low',shoulders:'narrow'}},
+    {id:'color_muted_cool',group:'配色',labelJa:'低彩度寒色',summaryJa:'青みの黒髪／青灰色の瞳／低彩度',patch:{hairColor:'blue_black',irisColor:'blue_gray',hairTemperature:'cool',hairSaturation:'muted',irisSaturation:'muted'}},
+    {id:'color_monochrome',group:'配色',labelJa:'モノトーン',summaryJa:'黒髪／灰色の瞳／落ち着いた印象',patch:{hairColor:'black',irisColor:'gray',impression:['muted']}},
+    {id:'color_blue_accent',group:'配色',labelJa:'青系差し色',summaryJa:'黒髪／青い瞳／高コントラスト',patch:{hairColor:'black',irisColor:'blue',impression:['high_contrast']}},
+    {id:'color_warm_soft',group:'配色',labelJa:'暖色柔らかめ',summaryJa:'明るい茶髪／琥珀色の瞳／柔らかな彩度',patch:{hairColor:'light_brown',irisColor:'amber',hairTemperature:'warm',hairSaturation:'soft',irisSaturation:'soft'}}
   ];
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -24,4 +24,6 @@
   add({id:'irisPattern',labelJa:'瞳の配色方式',category:'eyes',selectionMode:'multi',priority:38,modelDependency:'medium'},['solid|単色の瞳|solid-colored irises','gradient|グラデーションの瞳|gradient irises','central_ring|中央リング|central iris ring','sectoral|部分的な異色|sectoral heterochromia','heterochromia|オッドアイ|complete heterochromia']);
   add({id:'irisBrightness',labelJa:'瞳の明度',category:'eyes',priority:22},['dark|暗い瞳|dark-toned irises','medium|中間明度の瞳|medium-toned irises','light|明るい瞳|light-toned irises','luminous|澄んだ明るい瞳|luminous irises']);
   add({id:'irisSaturation',labelJa:'瞳の彩度',category:'eyes',priority:20},['muted|くすんだ瞳|muted iris color','soft|柔らかな彩度|soft iris color','clear|澄んだ色|clear iris color','vivid|鮮やかな瞳|vivid iris color']);
+  add({id:'eyeHighlights',labelJa:'目のハイライト',category:'eyes',priority:34,modelDependency:'medium'},['natural|自然なハイライト|natural eye highlights','minimal|ハイライト少なめ|eyes with minimal highlights','none|ハイライトなし|eyes with no catchlights']);
+  add({id:'eyeImpression',labelJa:'目の構造的な印象',category:'eyes',selectionMode:'multi',priority:32,modelDependency:'medium'},['vacant|虚ろな目|vacant eyes','lifeless|生気のない目|lifeless eyes']);
 })(typeof window !== 'undefined' ? window : globalThis);

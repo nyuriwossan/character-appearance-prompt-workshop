@@ -11,7 +11,7 @@
     { id: 'hairColor', labelJa: '髪色・髪質', description: '色、複数色、質感、光沢' },
     { id: 'skin', labelJa: '肌', description: '肌色、アンダートーン、血色、質感' },
     { id: 'body', labelJa: '身体つき', description: '身長、体格、肩、首、手足' },
-    { id: 'marks', labelJa: 'ほくろ・傷・メガネ', description: '固有特徴とメガネ' },
+    { id: 'marks', labelJa: 'ほくろ・傷・メガネ・ピアス', description: '固有特徴とメガネ、ピアス' },
     { id: 'impression', labelJa: '配色・印象', description: '外見全体の抽象的な印象' }
   ];
   function slug(text) {

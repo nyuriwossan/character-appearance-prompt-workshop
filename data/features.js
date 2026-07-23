@@ -1,7 +1,7 @@
 (function (root) {
   'use strict';
   var add=root.CAW.data.addField;
-  add({id:'browShape',labelJa:'眉の形',category:'features',includeInShort:true,priority:72},['straight|直線眉|straight eyebrows','soft_arch|緩やかなアーチ眉|softly arched eyebrows','high_arch|高いアーチ眉|high-arched eyebrows','angled|角度のある眉|angled eyebrows','rounded|丸みのある眉|rounded eyebrows','upward|上がり眉|upward-slanting eyebrows','downward|下がり眉|downward-slanting eyebrows']);
+  add({id:'browShape',labelJa:'眉の形',category:'features',includeInShort:true,priority:72},['straight|直線眉|straight eyebrows','parallel|平行眉|parallel eyebrows','soft_arch|緩やかなアーチ眉|softly arched eyebrows','high_arch|高いアーチ眉|high-arched eyebrows','angled|角度のある眉|angled eyebrows','rounded|丸みのある眉|rounded eyebrows','upward|上がり眉|upward-slanting eyebrows','downward|下がり眉|downward-slanting eyebrows','worried|困り眉|slightly drooping eyebrows']);
   add({id:'browThickness',labelJa:'眉の太さ',category:'features',priority:52},['very_thin|とても細い眉|very thin eyebrows','thin|細い眉|thin eyebrows','medium|自然な太さの眉|medium-thick eyebrows','thick|太い眉|thick eyebrows']);
   add({id:'browLength',labelJa:'眉の長さ',category:'features',priority:30},['short|短い眉|short eyebrows','medium|標準的な眉|medium-length eyebrows','long|長い眉|long eyebrows']);
   add({id:'browDensity',labelJa:'眉の濃さ',category:'features',priority:30},['faint|薄い眉|faint eyebrows','light|淡い眉|light eyebrows','natural|自然な濃さ|natural eyebrows','dense|濃い眉|dense eyebrows']);

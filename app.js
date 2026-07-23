@@ -35,7 +35,7 @@
     var labels={hard:'矛盾',warning:'注意',info:'モデル上の注意',suggestion:'提案'},icons={hard:'!',warning:'△',info:'i',suggestion:'+'},items=CAW.advisor.check(state);
     $('#diagnostics').innerHTML=items.length?items.map(function(x){return '<article class="diagnostic '+x.level+'"><span class="diagnostic-badge">'+icons[x.level]+' '+labels[x.level]+'</span><div><h3>'+escapeHtml(x.titleJa)+'</h3><p>'+escapeHtml(x.messageJa)+'</p></div>'+(x.patch?'<button class="button" data-apply-diagnostic="'+x.id+'">提案を適用</button>':'')+'</article>';}).join(''):'<div class="all-clear">✓ 現在、目立った矛盾や注意点はありません。</div>';
   }
-  var outputDefs=[['short','短縮プロンプト',function(){return CAW.generator.short(state);},'wide'],['detailed','詳細プロンプト',function(){return CAW.generator.detailed(state);},'wide'],['summary','日本語の外見まとめ',function(){return CAW.generator.summaryJa(state);},''],['basic','基本の外見一覧',function(){return CAW.generator.basicJa(state);},''],['arrange','アレンジ項目一覧',function(){return CAW.generator.arrangeJa(state);},''],['faceVerify','顔確認用プロンプト',function(){return CAW.generator.faceVerify(state);},''],['bodyVerify','身体確認用プロンプト',function(){return CAW.generator.bodyVerify(state);},'wide']];
+  var outputDefs=[['short','短縮プロンプト',function(){return CAW.generator.short(state);},'wide'],['detailed','詳細プロンプト',function(){return CAW.generator.detailed(state);},'wide'],['bodyPrompt','素体プロンプト',function(){return CAW.generator.bodyPrompt(state);},'wide'],['summary','日本語の外見まとめ',function(){return CAW.generator.summaryJa(state);},''],['basic','基本の外見一覧',function(){return CAW.generator.basicJa(state);},''],['arrange','アレンジ項目一覧',function(){return CAW.generator.arrangeJa(state);},''],['faceVerify','顔確認用プロンプト',function(){return CAW.generator.faceVerify(state);},''],['bodyVerify','身体確認用プロンプト',function(){return CAW.generator.bodyVerify(state);},'wide']];
   function renderOutputs(){
     $('#outputs').innerHTML=outputDefs.map(function(d){var text=d[2]();return '<article class="output-card '+d[3]+'"><div class="output-head"><h3>'+d[1]+'</h3><button class="copy-button" data-copy="'+d[0]+'">コピー</button></div><pre class="output-text '+(text?'':'empty')+'" id="output-'+d[0]+'">'+escapeHtml(text||'まだ出力できる項目が選ばれていません。')+'</pre></article>';}).join('');
   }
@@ -58,6 +58,7 @@
     if(b.dataset.copy){var text=$('#output-'+b.dataset.copy).textContent;if(text.indexOf('まだ出力')===0){toast('コピーする内容がありません');return;}copy(text).then(function(){toast('コピーしました');});return;}
     if(b.dataset.applyDiagnostic){var x=CAW.advisor.check(state).find(function(i){return i.id===b.dataset.applyDiagnostic;});if(x&&x.patch){state=CAW.state.patch(state,x.patch);renderAll();toast('提案を適用しました');}return;}
     if(b.hasAttribute('data-reset')){if(confirm('現在の編集内容を初期化します。名前付き保存は削除されません。')){state=CAW.state.initial();renderAll();toast('編集内容を初期化しました');}return;}
+    if(b.hasAttribute('data-back-to-top')){root.scrollTo({top:0,behavior:'smooth'});return;}
     if(b.hasAttribute('data-save-named')){state.name=$('#design-name').value.trim()||'名称未設定';state=CAW.storage.save(state,state.name);renderAll();toast('名前を付けて保存しました');return;}
     if(b.hasAttribute('data-open-library')){openLibrary();return;}
     if(b.hasAttribute('data-export-current')){download('character-appearance-'+state.id+'.json',JSON.stringify(CAW.normalizer.normalize(state),null,2));toast('JSONを書き出しました');return;}
@@ -73,5 +74,7 @@
     if(e.target.id==='json-import'&&e.target.files[0]){var reader=new FileReader();reader.onload=function(){try{var parsed=CAW.normalizer.parseJson(reader.result);if(parsed.kind==='design')state=parsed.design;else{parsed.designs.forEach(function(x){CAW.storage.save(x,x.name);});state=parsed.designs[0]||state;}renderAll();toast('JSONを読み込みました');}catch(err){toast(err.message);}e.target.value='';};reader.readAsText(e.target.files[0]);}
   });
   $('#library-dialog').addEventListener('close',function(){document.body.classList.remove('modal-open');});
-  state=CAW.storage.loadDraft();renderPresets();renderAll();
+  function updateBackToTop(){var button=$('#back-to-top');button.hidden=root.scrollY<500;}
+  root.addEventListener('scroll',updateBackToTop,{passive:true});
+  state=CAW.storage.loadDraft();renderPresets();renderAll();updateBackToTop();
 })(window);

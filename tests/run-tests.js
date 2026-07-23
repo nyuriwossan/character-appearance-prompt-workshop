@@ -17,6 +17,13 @@ function select(s,patch){return CAW.state.patch(s,patch);}
 const options=CAW.data.fields.flatMap(f=>f.options);
 ok(options.length>=300,'候補が300件以上');
 ok(CAW.data.fields.length>=70,'主要フィールドを網羅');
+ok(!!CAW.data.byOption('browShape','parallel'),'平行眉を収録');
+eq(CAW.data.byOption('browShape','worried').promptEn,'slightly drooping eyebrows','困り眉を造形表現で収録');
+ok(!!CAW.data.byOption('eyeHighlights','minimal'),'ハイライト少なめを収録');
+ok(!!CAW.data.byOption('eyeHighlights','none'),'ハイライトなしを収録');
+ok(!!CAW.data.byOption('eyeImpression','vacant'),'虚ろな目を収録');
+ok(!!CAW.data.byOption('eyeImpression','lifeless'),'生気のない目を収録');
+ok(['piercingUsage','piercingPosition','piercingCount','piercingStyle'].every(id=>!!CAW.data.byField(id)),'ピアス4軸を収録');
 const ids=new Set();
 CAW.data.fields.forEach(field=>{
   ok(field.id&&field.labelJa&&field.category,'フィールド必須値');
@@ -62,6 +69,11 @@ ok(CAW.generator.basicJa(s).includes('卵型'),'基本の外見一覧');
 eq(CAW.generator.arrangeJa(s),'','アレンジ空');
 ok(CAW.generator.faceVerify(s).includes('neutral expression'),'顔確認用');
 ok(CAW.generator.bodyVerify(s).includes('entire body visible'),'身体確認用');
+ok(CAW.generator.faceVerify(s).includes('head-and-shoulders portrait'),'顔確認用の安全な画角');
+no(CAW.generator.faceVerify(s),/bust up|bust portrait/i,'顔確認用にbust表現なし');
+['full body','full-body character reference','head to toe','feet visible','centered composition','plain white background'].forEach(tag=>ok(CAW.generator.bodyVerify(s).includes(tag),'身体確認用の全身補助 '+tag));
+const basePrompt=CAW.generator.bodyPrompt(s);ok(basePrompt.includes('oval face')&&basePrompt.includes('petite build'),'素体プロンプト');
+no(basePrompt,/plain|background|standing|full body|portrait|shirt|clothing|neutral expression/i,'素体へ確認用要素を混入しない');
 ok(detail.indexOf('androgynous appearance')<detail.indexOf('oval face'),'出力意味順');
 eq(CAW.generator.dedupe(['Gray Eyes',' gray eyes ','x']),['Gray Eyes','x'],'大文字空白重複除去');
 no(detail,/[ぁ-んァ-ヶ一-龠]/,'日本語が英語出力へ混入しない');
@@ -78,6 +90,19 @@ conflict=CAW.state.patch(conflict,diagnostics.find(x=>x.id==='bangs_conflict').p
 let warn=select(CAW.state.initial(),{silhouette:'petite',muscle:'very_high',molePosition:['below_left_eye','below_right_eye','left_cheek'],scarPosition:['left_brow','right_brow']});
 diagnostics=CAW.advisor.check(warn);ok(diagnostics.some(x=>x.level==='warning'),'warning診断');ok(diagnostics.some(x=>x.level==='info'),'info診断');
 ok(CAW.advisor.check(CAW.state.initial()).some(x=>x.level==='suggestion'),'suggestion診断');
+const piercing=select(CAW.state.initial(),{piercingUsage:'usual',piercingPosition:['earlobe','lip'],piercingCount:'multiple',piercingStyle:['small_stud','hoop']});
+ok(CAW.generator.detailed(piercing).includes('earlobe piercing')&&CAW.generator.bodyPrompt(piercing).includes('lip piercing'),'ピアスを詳細・素体へ出力');
+diagnostics=CAW.advisor.check(piercing);
+ok(diagnostics.some(x=>x.id==='too_many_piercings'),'多数ピアスwarning');
+ok(diagnostics.some(x=>x.id==='small_piercing'),'小さいピアスinfo');
+ok(diagnostics.some(x=>x.id==='mouth_piercing'),'口元ピアスinfo');
+const piercingRound=CAW.normalizer.parseJson(JSON.stringify(piercing)).design;
+eq(piercingRound.appearance.piercingPosition,['earlobe','lip'],'ピアス位置JSON往復');
+eq(piercingRound.appearance.piercingCount,'multiple','ピアス数JSON往復');
+eq(piercingRound.appearance.piercingUsage,'usual','ピアス扱いJSON往復');
+const optionalPiercing=select(CAW.state.initial(),{piercingUsage:'optional',piercingPosition:['ear'],piercingStyle:['hoop']});
+no(CAW.generator.bodyPrompt(optionalPiercing),/piercing|earring/i,'必要な時だけのピアスは素体から除外');
+ok(CAW.generator.arrangeJa(optionalPiercing).includes('ピアス'),'必要な時だけのピアスはアレンジへ分類');
 
 CAW.storage.saveDraft(s);eq(CAW.storage.loadDraft().appearance.faceShape,'oval','自動保存復元');
 const saved=CAW.storage.save(s,'テスト人物');ok(CAW.storage.list().length===1&&saved.name==='テスト人物','名前付き保存');
@@ -95,8 +120,12 @@ const cases=[
 cases.forEach(c=>{const x=select(CAW.state.initial(),c.patch),d=CAW.generator.detailed(x);ok(CAW.generator.short(x).length>0,c.name+'短縮');ok(d.length>0,c.name+'詳細');ok(CAW.generator.summaryJa(x).length>0,c.name+'日本語');ok(Array.isArray(CAW.advisor.check(x)),c.name+'診断');if(c.name.includes('少女'))no(d,/adult|mature|full lips|plump/i,'少女へ成人的タグなし');});
 
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8'),css=fs.readFileSync(path.join(root,'styles.css'),'utf8');
+const appSource=fs.readFileSync(path.join(root,'app.js'),'utf8');
 ok(/aria-expanded/.test(html)&&/aria-live/.test(html),'ARIA構造');
 ok(/viewport-fit=cover/.test(html)&&/safe-area-inset-bottom/.test(css),'スマホセーフエリア');
 ok(/min-height:44px/.test(css),'44pxタップ領域');
 ok(/max-width:360px/.test(css),'320px級レイアウト');
+ok(/全項目リセット/.test(html)&&/data-reset/.test(html)&&/confirm\('現在の編集内容を初期化/.test(appSource),'全項目リセットと確認');
+ok(/data-back-to-top/.test(html)&&/scrollY<500/.test(appSource)&&/behavior:'smooth'/.test(appSource),'上へ戻る表示とスムーズスクロール');
+ok(CAW.data.presets.length>41&&['brow_parallel','eyes_vacant','hair_long_layers','body_tall_slender','color_muted_cool'].every(id=>CAW.data.presets.some(p=>p.id===id)),'部分プリセットを増強');
 console.log(`PASS ${passed} assertions | ${options.length} options | ${CAW.data.presets.length} presets | ${CAW.data.rules.length} rules`);
