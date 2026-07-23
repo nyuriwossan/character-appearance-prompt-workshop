@@ -1,0 +1,21 @@
+(function (root) {
+  'use strict';
+  var add=root.CAW.data.addField;
+  add({id:'browShape',labelJa:'眉の形',category:'features',includeInShort:true,priority:72},['straight|直線眉|straight eyebrows','soft_arch|緩やかなアーチ眉|softly arched eyebrows','high_arch|高いアーチ眉|high-arched eyebrows','angled|角度のある眉|angled eyebrows','rounded|丸みのある眉|rounded eyebrows','upward|上がり眉|upward-slanting eyebrows','downward|下がり眉|downward-slanting eyebrows']);
+  add({id:'browThickness',labelJa:'眉の太さ',category:'features',priority:52},['very_thin|とても細い眉|very thin eyebrows','thin|細い眉|thin eyebrows','medium|自然な太さの眉|medium-thick eyebrows','thick|太い眉|thick eyebrows']);
+  add({id:'browLength',labelJa:'眉の長さ',category:'features',priority:30},['short|短い眉|short eyebrows','medium|標準的な眉|medium-length eyebrows','long|長い眉|long eyebrows']);
+  add({id:'browDensity',labelJa:'眉の濃さ',category:'features',priority:30},['faint|薄い眉|faint eyebrows','light|淡い眉|light eyebrows','natural|自然な濃さ|natural eyebrows','dense|濃い眉|dense eyebrows']);
+  add({id:'browDetail',labelJa:'眉の左右差・欠け',category:'features',selectionMode:'multi',priority:22,modelDependency:'high'},['even|整った眉|even eyebrows','slight_asymmetry|わずかな左右差|slightly asymmetrical eyebrows','left_notch|左眉の小さな欠け|small notch in the left eyebrow','right_notch|右眉の小さな欠け|small notch in the right eyebrow']);
+  add({id:'noseBridge',labelJa:'鼻筋',category:'features',priority:55},['low|低い鼻筋|low nose bridge','soft|柔らかな鼻筋|soft nose bridge','straight|通った鼻筋|straight nose bridge','defined|明瞭な鼻筋|defined nose bridge']);
+  add({id:'noseWidth',labelJa:'鼻筋の幅',category:'features',priority:35},['narrow|細い鼻筋|narrow nose bridge','medium|標準的な鼻筋|medium-width nose bridge','wide|幅のある鼻筋|wide nose bridge']);
+  add({id:'noseLength',labelJa:'鼻の長さ',category:'features',priority:32},['short|短い鼻|short nose','medium|標準的な鼻|medium-length nose','long|長い鼻|long nose']);
+  add({id:'noseTip',labelJa:'鼻先',category:'features',priority:38,modelDependency:'medium'},['small|小さな鼻先|small nose tip','rounded|丸い鼻先|rounded nose tip','pointed|尖った鼻先|pointed nose tip','upturned|上向きの鼻先|slightly upturned nose tip']);
+  add({id:'mouthWidth',labelJa:'口の横幅',category:'features',priority:38},['narrow|小さな口|narrow mouth','medium|標準的な口|medium-width mouth','wide|横幅のある口|wide mouth']);
+  add({id:'lipFullness',labelJa:'唇の厚み',category:'features',includeInShort:true,priority:50},['very_thin|とても薄い唇|very thin lips','thin|薄い唇|thin lips','medium|自然な厚みの唇|medium-full lips','full|厚い唇|full lips','plump|ふっくらした唇|plump lips']);
+  add({id:'lipRatio',labelJa:'上下唇の比率',category:'features',priority:25},['upper_thicker|上唇が厚め|fuller upper lip','balanced|上下が均等|balanced upper and lower lips','lower_thicker|下唇が厚め|fuller lower lip']);
+  add({id:'lipContour',labelJa:'唇の輪郭',category:'features',priority:25},['soft|柔らかな輪郭|soft lip contour','defined|明瞭な輪郭|defined lip contour','cupid_bow|明瞭なキューピッドボウ|defined cupid bow']);
+  add({id:'restingCorners',labelJa:'安静時の口角',category:'features',priority:42},['down|やや下がった口角|slightly downturned resting mouth','level|水平な口角|level resting mouth','up|やや上がった口角|slightly upturned resting mouth']);
+  add({id:'restingMouth',labelJa:'普段の口の開き',category:'features',priority:32},['closed|自然に閉じた口|naturally closed mouth','slightly_open|少し開いた口|slightly parted lips','parted|開いて見える口|parted lips']);
+  add({id:'lipGloss',labelJa:'唇の艶',category:'features',defaultGroup:'arrange',priority:18},['matte|艶のない唇|matte lips','natural|自然な唇の艶|natural lip sheen','glossy|艶のある唇|glossy lips','wet|濡れたような唇の艶|wet-look lips']);
+  add({id:'teeth',labelJa:'歯・八重歯',category:'features',selectionMode:'multi',priority:18,modelDependency:'high'},['not_emphasized|歯を強調しない|unemphasized teeth','even|整った歯|even teeth','small_fang|小さな八重歯|small fang tooth','double_fangs|左右の八重歯|small paired fang teeth']);
+})(typeof window !== 'undefined' ? window : globalThis);

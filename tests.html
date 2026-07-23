@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="ja">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>キャラクター外見設計工房 テスト</title><style>body{font-family:system-ui;margin:32px;line-height:1.7}.pass{color:#27633d}.fail{color:#a12f2b}code{background:#eee;padding:2px 5px}</style></head>
+<body><h1>ブラウザテスト</h1><div id="result">実行中…</div>
+<script src="data/core.js"></script><script src="data/basic-face.js"></script><script src="data/eyes.js"></script><script src="data/features.js"></script><script src="data/hair.js"></script><script src="data/skin-body.js"></script><script src="data/marks.js"></script><script src="data/presets.js"></script><script src="data/rules.js"></script><script src="state.js"></script><script src="normalizer.js"></script><script src="generator.js"></script><script src="advisor.js"></script><script src="storage.js"></script>
+<script>
+(function(){var n=0;function ok(v,m){if(!v)throw new Error(m);n++}try{var s=CAW.state.patch(CAW.state.initial(),{genderPresentation:'androgynous',faceShape:'oval',irisColor:'gray',hairColor:'black'});ok(CAW.data.fields.flatMap(function(f){return f.options}).length>=300,'候補数');ok(CAW.generator.short(s).includes('androgynous'),'短縮');ok(CAW.generator.detailed(s).includes('gray eyes'),'詳細');ok(CAW.generator.summaryJa(s).includes('顔骨格'),'日本語');ok(Array.isArray(CAW.advisor.check(s)),'診断');CAW.storage.saveDraft(s);ok(CAW.storage.loadDraft().appearance.faceShape==='oval','保存');document.getElementById('result').innerHTML='<p class="pass">PASS '+n+' browser smoke tests</p><p><a href="index.html">アプリへ戻る</a></p>';}catch(e){document.getElementById('result').innerHTML='<p class="fail">FAIL '+e.message+'</p>';}})();
+</script></body></html>
