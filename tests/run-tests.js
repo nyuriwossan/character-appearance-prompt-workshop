@@ -6,7 +6,7 @@ const memory={};
 global.localStorage={getItem:k=>Object.prototype.hasOwnProperty.call(memory,k)?memory[k]:null,setItem:(k,v)=>{memory[k]=String(v);},removeItem:k=>{delete memory[k];}};
 [
   'data/core.js','data/basic-face.js','data/eyes.js','data/features.js','data/hair.js','data/skin-body.js','data/marks.js','data/presets.js','data/rules.js',
-  'state.js','normalizer.js','generator.js','advisor.js','storage.js'
+  'state.js','normalizer.js','generator.js','advisor.js','storage.js','preset-ui.js'
 ].forEach(file=>vm.runInThisContext(fs.readFileSync(path.join(root,file),'utf8'),{filename:file}));
 let passed=0;
 function ok(value,message){if(!value)throw new Error(message);passed++;}
@@ -44,6 +44,29 @@ CAW.data.presets.forEach(p=>{
     (Array.isArray(value)?value:[value]).forEach(id=>ok(!!CAW.data.byOption(field,id),'プリセット参照候補 '+field+':'+id));
   });
 });
+const expectedPresetCounts={'顔立ち':13,'目元':20,'眉':12,'髪型':21,'体格':15,'配色':17};
+eq(Object.fromEntries(CAW.presetUi.groups().map(group=>[group,CAW.presetUi.list(group).length])),expectedPresetCounts,'カテゴリ別プリセット件数');
+ok(CAW.data.presets.length>=90&&CAW.data.presets.length<=100,'プリセット総数90〜100件');
+const presetIds=new Set(),patchSignatures=new Set();
+CAW.data.presets.forEach(p=>{
+  ok(!presetIds.has(p.id),'プリセットID重複なし '+p.id);presetIds.add(p.id);
+  const signature=JSON.stringify(Object.keys(p.patch).sort().map(key=>[key,p.patch[key]]));
+  ok(!patchSignatures.has(signature),'同一パッチ重複なし '+p.id);patchSignatures.add(signature);
+  const applied=CAW.state.patch(CAW.state.initial(),p.patch);
+  ok(!CAW.advisor.check(applied).some(x=>x.level==='hard'),'プリセット単独適用でhardなし '+p.id);
+  const restoredPreset=CAW.normalizer.parseJson(JSON.stringify(applied)).design;
+  Object.keys(p.patch).forEach(field=>eq(restoredPreset.appearance[field],applied.appearance[field],'プリセットJSON往復 '+p.id+':'+field));
+  no(CAW.generator.detailed(applied),new RegExp(p.labelJa),'プリセット名を英語出力へ混入しない '+p.id);
+});
+const previewPreset=CAW.data.presets.find(p=>p.id==='eyes_heavy_half');
+let previewState=CAW.state.patch(CAW.state.initial(),{eyeShape:['almond'],upperEyelid:['heavy']});
+const preview=CAW.presetUi.analyze(previewPreset,previewState);
+eq([preview.added,preview.changed,preview.total],[1,1,2],'適用前確認の新規・変更・合計');
+ok(preview.items.some(item=>item.beforeJa==='アーモンド型の目'&&item.afterJa==='半目がち'),'適用前確認の変更前後ラベル');
+previewState=CAW.state.patch(previewState,previewPreset.patch);
+eq(CAW.presetUi.analyze(previewPreset,previewState).total,0,'同一プリセット再適用は変更なし');
+previewState=CAW.state.remove(previewState,'eyeShape','half_lidded');
+eq(previewState.appearance.eyeShape,[],'プリセット適用後に個別解除');
 CAW.data.rules.forEach(r=>ok(r.id&&['hard','warning','info','suggestion'].includes(r.level),'ルール必須値'));
 
 let s=CAW.state.initial();
@@ -127,5 +150,11 @@ ok(/min-height:44px/.test(css),'44pxタップ領域');
 ok(/max-width:360px/.test(css),'320px級レイアウト');
 ok(/全項目リセット/.test(html)&&/data-reset/.test(html)&&/confirm\('現在の編集内容を初期化/.test(appSource),'全項目リセットと確認');
 ok(/data-back-to-top/.test(html)&&/scrollY<500/.test(appSource)&&/behavior:'smooth'/.test(appSource),'上へ戻る表示とスムーズスクロール');
-ok(CAW.data.presets.length>41&&['brow_parallel','eyes_vacant','hair_long_layers','body_tall_slender','color_muted_cool'].every(id=>CAW.data.presets.some(p=>p.id===id)),'部分プリセットを増強');
+ok(/role="tablist"/.test(appSource)&&/aria-selected/.test(appSource)&&/data-preset-group/.test(appSource),'6カテゴリのタブARIA');
+ok(/data-preset-more/.test(appSource)&&/表示を減らす/.test(appSource)&&/initialVisible/.test(appSource),'もっと見ると表示を減らす');
+ok(/preset-count/.test(appSource)&&/summaryJa/.test(appSource)&&/項目を設定/.test(appSource),'プリセットカードの説明と項目数');
+ok(/data-confirm-preset/.test(html)&&/preset-impact-list/.test(html)&&/presetUi\.analyze/.test(appSource),'適用前の変更内容確認');
+ok(/\.preset-grid\{[^}]*repeat\(4/.test(css)&&/@media\(max-width:700px\)[\s\S]*?\.preset-grid\{grid-template-columns:repeat\(2/.test(css)&&/@media\(max-width:300px\)[\s\S]*?\.preset-grid\{grid-template-columns:1fr/.test(css),'プリセットグリッド4列・2列・1列');
+ok(/word-break:keep-all/.test(css)&&/brand h1 span/.test(css)&&/intro h2 span/.test(css),'タイトルと導入見出しの意味単位改行');
+ok(['face_ethereal','eyes_cold_elongated','brow_thick_parallel','hair_low_ponytail','body_sports','color_deep_jewel'].every(id=>CAW.data.presets.some(p=>p.id===id)),'Phase 2A代表プリセット');
 console.log(`PASS ${passed} assertions | ${options.length} options | ${CAW.data.presets.length} presets | ${CAW.data.rules.length} rules`);

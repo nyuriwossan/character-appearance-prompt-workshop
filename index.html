@@ -13,12 +13,17 @@
     <div class="header-inner">
       <div class="brand">
         <span class="brand-mark" aria-hidden="true">CA</span>
-        <div><h1>キャラクター外見設計工房</h1><p>Character Appearance Prompt Workshop</p></div>
+        <div class="brand-copy">
+          <h1><span>キャラクター外見</span><span>設計工房</span></h1>
+          <p>Character Appearance Prompt Workshop</p>
+        </div>
       </div>
-      <div class="header-actions">
+      <div class="header-utilities">
         <span id="save-status" class="save-status" role="status">自動保存済み</span>
-        <button class="button quiet" data-open-library>保存一覧</button>
-        <button class="button quiet" data-export-current>JSON書き出し</button>
+        <div class="header-actions">
+          <button class="button quiet" data-open-library>保存一覧</button>
+          <button class="button quiet" data-export-current>JSON書き出し</button>
+        </div>
       </div>
     </div>
   </header>
@@ -27,7 +32,7 @@
     <section class="intro panel">
       <div>
         <p class="eyebrow">APPEARANCE BLUEPRINT</p>
-        <h2>顔、髪、肌、身体つきを<br>必要なところから設計。</h2>
+        <h2><span>顔・髪・肌・身体つきを</span><span>必要なところから設計。</span></h2>
       </div>
       <p>衣装、表情、ポーズ、背景は別の工房で追加します。選択内容はこの端末へ自動保存され、未設定の項目は出力しません。</p>
     </section>
@@ -76,6 +81,25 @@
     <p class="modal-note">この端末のブラウザ内だけに保存されています。JSONバックアップもご利用ください。</p>
     <div id="library-list" class="library-list"></div>
   </dialog>
+  <dialog id="preset-dialog" class="modal preset-dialog" aria-labelledby="preset-dialog-title">
+    <div class="modal-head">
+      <div><p class="eyebrow">PRESET REVIEW</p><h2 id="preset-dialog-title">プリセットを適用</h2></div>
+      <button class="icon-button" data-close-preset-dialog aria-label="閉じる">×</button>
+    </div>
+    <div class="preset-review">
+      <p id="preset-dialog-summary" class="modal-note"></p>
+      <div class="preset-impact-stats" aria-live="polite">
+        <span>新しく設定<strong id="preset-added-count">0</strong>項目</span>
+        <span>既存値を変更<strong id="preset-changed-count">0</strong>項目</span>
+        <span>合計<strong id="preset-total-count">0</strong>項目</span>
+      </div>
+      <ul id="preset-impact-list" class="preset-impact-list"></ul>
+      <div class="preset-review-actions">
+        <button class="button" data-close-preset-dialog>キャンセル</button>
+        <button class="button primary" data-confirm-preset>この内容を適用</button>
+      </div>
+    </div>
+  </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <button id="back-to-top" class="back-to-top" data-back-to-top hidden aria-label="ページ上部へ戻る">↑ 上へ戻る</button>
 
@@ -93,6 +117,7 @@
   <script src="generator.js"></script>
   <script src="advisor.js"></script>
   <script src="storage.js"></script>
+  <script src="preset-ui.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

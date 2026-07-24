@@ -1,6 +1,7 @@
 (function (root) {
   'use strict';
-  var CAW=root.CAW,D=CAW.data,state;
+  var CAW=root.CAW,D=CAW.data,state,pendingPreset=null;
+  var activePresetGroup=CAW.presetUi.groups()[0],expandedPresetGroups={};
   var customMap={face:['face'],eyes:['eyes'],features:[],hairStyle:['hair'],hairColor:[],skin:['skin'],body:['body'],marks:['marks'],impression:['general']};
   var customLabels={face:'顔',eyes:'目',hair:'髪',skin:'肌',body:'身体',marks:'固有特徴',general:'全体'};
   function $(s,p){return(p||document).querySelector(s);}function $$(s,p){return Array.from((p||document).querySelectorAll(s));}
@@ -10,8 +11,32 @@
   function isSelected(f,id){var v=state.appearance[f.id];return Array.isArray(v)?v.indexOf(id)>=0:v===id;}
   function categoryItems(cat){return CAW.generator.selected(state).filter(function(x){return x.field.category===cat;});}
   function renderPresets(){
-    var groups={};D.presets.forEach(function(p){(groups[p.group]=groups[p.group]||[]).push(p);});
-    $('#preset-groups').innerHTML=Object.keys(groups).map(function(g){return '<div class="preset-group"><h3>'+escapeHtml(g)+'</h3><div class="preset-row">'+groups[g].map(function(p){return '<button class="preset-card" data-preset="'+p.id+'" title="'+escapeHtml(p.summaryJa)+'"><strong>'+escapeHtml(p.labelJa)+'</strong><small>'+escapeHtml(p.summaryJa)+'</small></button>';}).join('')+'</div></div>';}).join('');
+    var groups=CAW.presetUi.groups(),presets=CAW.presetUi.list(activePresetGroup),expanded=!!expandedPresetGroups[activePresetGroup];
+    var visible=expanded?presets:presets.slice(0,CAW.presetUi.initialVisible);
+    var tabs='<div class="preset-tabs" role="tablist" aria-label="部分プリセットのカテゴリ">'+groups.map(function(group){
+      var selected=group===activePresetGroup;
+      return '<button class="preset-tab" id="preset-tab-'+groups.indexOf(group)+'" role="tab" aria-selected="'+selected+'" aria-controls="preset-panel" tabindex="'+(selected?'0':'-1')+'" data-preset-group="'+escapeHtml(group)+'">'+escapeHtml(group)+'</button>';
+    }).join('')+'</div>';
+    var cards=visible.map(function(p){
+      return '<button class="preset-card" data-preset="'+p.id+'" title="'+escapeHtml(p.summaryJa)+'"><strong>'+escapeHtml(p.labelJa)+'</strong><small>'+escapeHtml(p.summaryJa)+'</small><span class="preset-count">'+Object.keys(p.patch).length+'項目を設定</span></button>';
+    }).join('');
+    var more=presets.length>CAW.presetUi.initialVisible?'<div class="preset-more"><button class="button" data-preset-more aria-expanded="'+expanded+'" aria-controls="preset-grid">'+(expanded?'表示を減らす':'もっと見る（残り'+(presets.length-visible.length)+'件）')+'</button></div>':'';
+    $('#preset-groups').innerHTML=tabs+'<div class="preset-panel" id="preset-panel" role="tabpanel" aria-labelledby="preset-tab-'+groups.indexOf(activePresetGroup)+'"><div class="preset-grid" id="preset-grid">'+cards+'</div>'+more+'</div>';
+  }
+  function openPresetReview(preset){
+    var impact=CAW.presetUi.analyze(preset,state),dialog=$('#preset-dialog');
+    pendingPreset=preset;
+    $('#preset-dialog-title').textContent='「'+preset.labelJa+'」を適用';
+    $('#preset-dialog-summary').textContent=preset.summaryJa+'。適用後も各項目を個別に変更・解除できます。';
+    $('#preset-added-count').textContent=impact.added;
+    $('#preset-changed-count').textContent=impact.changed;
+    $('#preset-total-count').textContent=impact.total;
+    $('#preset-impact-list').innerHTML=impact.items.length?impact.items.map(function(item){
+      var change=item.kind==='changed'?'<span class="preset-impact-before">'+escapeHtml(item.beforeJa)+'</span><span class="preset-impact-arrow">→</span>':'';
+      return '<li class="'+item.kind+'"><strong>'+escapeHtml(item.labelJa)+'</strong>'+change+'<span>'+escapeHtml(item.afterJa)+'</span></li>';
+    }).join(''):'<li class="preset-impact-empty">現在の設定と同じため、変更される項目はありません。</li>';
+    $('[data-confirm-preset]',dialog).disabled=impact.total===0;
+    dialog.showModal();document.body.classList.add('modal-open');
   }
   function fieldHtml(f){
     return '<div class="field"><div class="field-title"><h3>'+escapeHtml(f.labelJa)+'</h3><span class="field-meta">'+(f.selectionMode==='multi'?'複数選択':'1つ選択')+'・未設定可</span></div><div class="chip-grid">'+f.options.map(function(o){return '<button class="choice-chip" data-field="'+f.id+'" data-option="'+o.id+'" aria-pressed="'+isSelected(f,o.id)+'">'+(o.colorValue?'<span class="swatch" style="background:'+o.colorValue+'"></span>':'')+escapeHtml(o.labelJa)+'</button>';}).join('')+'</div></div>';
@@ -51,7 +76,11 @@
     var b=e.target.closest('button');if(!b)return;
     if(b.dataset.field){state=CAW.state.set(state,b.dataset.field,b.dataset.option);renderAll();return;}
     if(b.dataset.category){var id=b.dataset.category,list=state.preferences.openCategories||[],i=list.indexOf(id);if(i>=0)list.splice(i,1);else list.push(id);state.preferences.openCategories=list;renderAccordions();return;}
-    if(b.dataset.preset){var p=D.presets.find(function(x){return x.id===b.dataset.preset;}),over=Object.keys(p.patch).filter(function(k){var v=state.appearance[k];return Array.isArray(v)?v.length&&JSON.stringify(v)!==JSON.stringify(p.patch[k]):v&&v!==p.patch[k];});if(over.length&&!confirm('このプリセットは '+over.length+' 項目を上書きします。適用しますか？'))return;state=CAW.state.patch(state,p.patch);renderAll();toast('「'+p.labelJa+'」を適用しました');return;}
+    if(b.dataset.presetGroup){activePresetGroup=b.dataset.presetGroup;renderPresets();return;}
+    if(b.hasAttribute('data-preset-more')){expandedPresetGroups[activePresetGroup]=!expandedPresetGroups[activePresetGroup];renderPresets();return;}
+    if(b.dataset.preset){var p=D.presets.find(function(x){return x.id===b.dataset.preset;});if(p)openPresetReview(p);return;}
+    if(b.hasAttribute('data-confirm-preset')){if(pendingPreset){var applied=pendingPreset;state=CAW.state.patch(state,applied.patch);pendingPreset=null;$('#preset-dialog').close();document.body.classList.remove('modal-open');renderAll();toast('「'+applied.labelJa+'」を適用しました');}return;}
+    if(b.hasAttribute('data-close-preset-dialog')){pendingPreset=null;$('#preset-dialog').close();document.body.classList.remove('modal-open');return;}
     if(b.id==='selection-toggle'){var list=$('#selection-list'),open=list.hidden;list.hidden=!open;b.setAttribute('aria-expanded',String(open));return;}
     if(b.dataset.removeField){state=CAW.state.remove(state,b.dataset.removeField,b.dataset.option);renderAll();return;}
     if(b.dataset.removeCustom){state.customTags[b.dataset.removeCustom]=state.customTags[b.dataset.removeCustom].filter(function(x){return x!==b.dataset.tag;});renderAll();return;}
@@ -74,6 +103,7 @@
     if(e.target.id==='json-import'&&e.target.files[0]){var reader=new FileReader();reader.onload=function(){try{var parsed=CAW.normalizer.parseJson(reader.result);if(parsed.kind==='design')state=parsed.design;else{parsed.designs.forEach(function(x){CAW.storage.save(x,x.name);});state=parsed.designs[0]||state;}renderAll();toast('JSONを読み込みました');}catch(err){toast(err.message);}e.target.value='';};reader.readAsText(e.target.files[0]);}
   });
   $('#library-dialog').addEventListener('close',function(){document.body.classList.remove('modal-open');});
+  $('#preset-dialog').addEventListener('close',function(){pendingPreset=null;document.body.classList.remove('modal-open');});
   function updateBackToTop(){var button=$('#back-to-top');button.hidden=root.scrollY<500;}
   root.addEventListener('scroll',updateBackToTop,{passive:true});
   state=CAW.storage.loadDraft();renderPresets();renderAll();updateBackToTop();

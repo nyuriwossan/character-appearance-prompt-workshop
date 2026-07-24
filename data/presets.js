@@ -57,6 +57,54 @@
     {id:'color_muted_cool',group:'配色',labelJa:'低彩度寒色',summaryJa:'青みの黒髪／青灰色の瞳／低彩度',patch:{hairColor:'blue_black',irisColor:'blue_gray',hairTemperature:'cool',hairSaturation:'muted',irisSaturation:'muted'}},
     {id:'color_monochrome',group:'配色',labelJa:'モノトーン',summaryJa:'黒髪／灰色の瞳／落ち着いた印象',patch:{hairColor:'black',irisColor:'gray',impression:['muted']}},
     {id:'color_blue_accent',group:'配色',labelJa:'青系差し色',summaryJa:'黒髪／青い瞳／高コントラスト',patch:{hairColor:'black',irisColor:'blue',impression:['high_contrast']}},
-    {id:'color_warm_soft',group:'配色',labelJa:'暖色柔らかめ',summaryJa:'明るい茶髪／琥珀色の瞳／柔らかな彩度',patch:{hairColor:'light_brown',irisColor:'amber',hairTemperature:'warm',hairSaturation:'soft',irisSaturation:'soft'}}
+    {id:'color_warm_soft',group:'配色',labelJa:'暖色柔らかめ',summaryJa:'明るい茶髪／琥珀色の瞳／柔らかな彩度',patch:{hairColor:'light_brown',irisColor:'amber',hairTemperature:'warm',hairSaturation:'soft',irisSaturation:'soft'}},
+
+    {id:'face_ethereal',group:'顔立ち',labelJa:'儚げな顔立ち',summaryJa:'卵型／細い顎／すっきりした頬／繊細',patch:{faceShape:'oval',jawShape:'narrow',jawline:'tapered',cheeks:'lean',overallDirection:'delicate'}},
+    {id:'face_inorganic',group:'顔立ち',labelJa:'無機質な顔立ち',summaryJa:'ひし形／尖った顎／くぼんだ頬／自然体',patch:{faceShape:'diamond',jawShape:'pointed',jawline:'angular',cheeks:'hollow',overallDirection:'neutral'}},
+    {id:'face_intellectual',group:'顔立ち',labelJa:'知的な顔立ち',summaryJa:'面長／細い顎／高い頬骨／端正',patch:{faceShape:'long',jawShape:'narrow',jawline:'defined',cheekbones:'high',overallDirection:'refined'}},
+    {id:'face_noble',group:'顔立ち',labelJa:'高貴な顔立ち',summaryJa:'ハート型／尖った顎／高い頬骨／端正',patch:{faceShape:'heart',jawShape:'pointed',jawline:'tapered',cheekbones:'high',overallDirection:'refined'}},
+    {id:'face_wild',group:'顔立ち',labelJa:'野性的な顔立ち',summaryJa:'四角い顔／広い顎／角張った顎線／幅のある頬骨',patch:{faceShape:'square',jawShape:'broad',jawline:'angular',cheekbones:'wide',overallDirection:'defined'}},
+    {id:'face_androgynous_delicate',group:'顔立ち',labelJa:'中性的で繊細な顔立ち',summaryJa:'中性的／ハート型／細い顎／目立たない頬骨',patch:{genderPresentation:'androgynous',faceShape:'heart',jawShape:'narrow',jawline:'soft',cheekbones:'subtle',overallDirection:'delicate'}},
+    {id:'face_sharp_refined',group:'顔立ち',labelJa:'シャープで端正な顔立ち',summaryJa:'逆三角形／尖った顎／明瞭な顎線／すっきりした頬',patch:{faceShape:'inverted_triangle',jawShape:'pointed',jawline:'defined',cheeks:'lean',overallDirection:'refined'}},
+
+    {id:'eyes_cold_elongated',group:'目元',labelJa:'冷たい切れ長の目',summaryJa:'細い目／狭い縦幅／切れ長／上がった目尻',patch:{eyeShape:['narrow'],eyeSize:'medium',eyeHeight:'narrow',eyeWidth:'long',outerCorner:'up',upperEyelid:['light']}},
+    {id:'eyes_sleepy_soft_half',group:'目元',labelJa:'眠たげな半目',summaryJa:'半目がち／狭い縦幅／重い上まぶた／ハイライト少なめ',patch:{eyeShape:['half_lidded'],eyeSize:'medium',eyeHeight:'narrow',upperEyelid:['heavy'],eyeHighlights:'minimal'}},
+    {id:'eyes_defined_tear_bags',group:'目元',labelJa:'涙袋の目立つ目',summaryJa:'アーモンド型／輪郭のある下まぶた／明瞭な涙袋',patch:{eyeShape:['almond'],eyeSize:'medium',eyeHeight:'balanced',lowerEyelid:['defined'],tearBags:['defined']}},
+    {id:'eyes_clear_large',group:'目元',labelJa:'大きく澄んだ目',summaryJa:'大きな丸い目／広い縦幅／大きな虹彩／澄んだ明るさ',patch:{eyeShape:['round'],eyeSize:'large',eyeHeight:'wide',irisSize:'large',irisBrightness:'luminous',irisSaturation:'clear',eyeHighlights:'natural'}},
+    {id:'eyes_soft_drooping',group:'目元',labelJa:'柔らかいたれ目',summaryJa:'たれ目／下がった目尻／自然な上まぶた／柔らかな涙袋',patch:{eyeShape:['downturned'],eyeSize:'medium',eyeWidth:'balanced',outerCorner:'down',upperEyelid:['balanced'],tearBags:['soft']}},
+    {id:'eyes_precise_upturned',group:'目元',labelJa:'細く鋭いつり目',summaryJa:'小さなつり目／狭い縦幅／切れ長／軽い上まぶた',patch:{eyeShape:['upturned'],eyeSize:'small',eyeHeight:'narrow',eyeWidth:'long',outerCorner:'up',upperEyelid:['light']}},
+    {id:'eyes_heavy_upper',group:'目元',labelJa:'重い上まぶたの目',summaryJa:'アーモンド型／狭い縦幅／重い上まぶた／奥二重',patch:{eyeShape:['almond'],eyeSize:'medium',eyeHeight:'narrow',upperEyelid:['heavy'],eyelidFold:'hidden_double',lowerEyelid:['smooth']}},
+    {id:'eyes_neutral_monolid',group:'目元',labelJa:'静かな一重の目',summaryJa:'一重らしい目元／標準幅／水平な目尻／まばらなまつ毛',patch:{eyeShape:['monolid'],eyeSize:'medium',eyeHeight:'balanced',eyeWidth:'balanced',outerCorner:'level',eyelidFold:'monolid',upperLashes:['sparse']}},
+
+    {id:'brow_thick_parallel',group:'眉',labelJa:'力強い平行眉',summaryJa:'平行／太い／濃い／長め',patch:{browShape:'parallel',browThickness:'thick',browDensity:'dense',browLength:'long'}},
+    {id:'brow_soft_downward',group:'眉',labelJa:'柔らかな下がり眉',summaryJa:'下がり眉／細い／淡い／長め',patch:{browShape:'downward',browThickness:'thin',browDensity:'light',browLength:'long'}},
+    {id:'brow_raised_tail',group:'眉',labelJa:'眉尻が上がった眉',summaryJa:'上がり眉／自然な太さと濃さ／長め',patch:{browShape:'upward',browThickness:'medium',browDensity:'natural',browLength:'long'}},
+    {id:'brow_delicate_arch',group:'眉',labelJa:'繊細なアーチ眉',summaryJa:'緩やかなアーチ／とても細い／淡い',patch:{browShape:'soft_arch',browThickness:'very_thin',browDensity:'light',browLength:'medium'}},
+    {id:'brow_compact_straight',group:'眉',labelJa:'短めの直線眉',summaryJa:'直線／自然な太さ／濃い／短め',patch:{browShape:'straight',browThickness:'medium',browDensity:'dense',browLength:'short'}},
+
+    {id:'hair_forward_short',group:'髪型',labelJa:'前下がりショート',summaryJa:'顎までのボブ／流し前髪／長い横髪／先細りの襟足',patch:{hairLength:'chin',baseCut:['bob'],bangs:['side_swept'],sideHair:['long_sidelocks'],nape:'tapered',hairTexture:['sleek']}},
+    {id:'hair_heavy_mush',group:'髪型',labelJa:'重めマッシュ',summaryJa:'短髪マッシュ／ぱっつん前髪／分け目なし／毛量多め',patch:{hairLength:'short',baseCut:['mushroom'],bangs:['straight'],parting:'none',hairVolume:'thick',hairTexture:['straight']}},
+    {id:'hair_light_mush',group:'髪型',labelJa:'軽いマッシュ',summaryJa:'短髪マッシュ／薄い前髪／毛量少なめ／細く柔らかな髪',patch:{hairLength:'short',baseCut:['mushroom'],bangs:['wispy'],parting:'none',hairVolume:'light',hairTexture:['fine','soft']}},
+    {id:'hair_long_wolf',group:'髪型',labelJa:'長めウルフ',summaryJa:'胸上のウルフ／カーテンバング／段のあるサイド／長い襟足',patch:{hairLength:'medium',baseCut:['wolf'],bangs:['curtain'],sideHair:['layered_sides'],nape:'long',hairTexture:['messy']}},
+    {id:'hair_ear_tucked_short',group:'髪型',labelJa:'耳かけショート',summaryJa:'レイヤーショート／流し前髪／耳かけ／短い襟足',patch:{hairLength:'short',baseCut:['layered_short'],bangs:['side_swept'],sideHair:['tucked'],nape:'clean',hairTexture:['sleek']}},
+    {id:'hair_heavy_bob',group:'髪型',labelJa:'重めボブ',summaryJa:'顎までのボブ／ぱっつん前髪／分け目なし／毛量多め',patch:{hairLength:'chin',baseCut:['bob'],bangs:['straight'],parting:'none',hairVolume:'thick',hairTexture:['straight']}},
+    {id:'hair_light_bob',group:'髪型',labelJa:'軽いボブ',summaryJa:'顎までのボブ／薄い前髪／左分け／柔らかな髪',patch:{hairLength:'chin',baseCut:['bob'],bangs:['wispy'],parting:'left',hairVolume:'light',hairTexture:['soft']}},
+    {id:'hair_low_ponytail',group:'髪型',labelJa:'低めポニーテール',summaryJa:'長髪／低いポニーテール／センターパート／顔周りの毛束',patch:{hairLength:'long',baseCut:['low_ponytail'],parting:'center',bangs:['curtain'],sideHair:['face_framing'],hairTexture:['soft']}},
+    {id:'hair_soft_medium',group:'髪型',labelJa:'柔らかなミディアム',summaryJa:'肩までのロングボブ／薄い前髪／段のあるサイド／緩いウェーブ',patch:{hairLength:'shoulder',baseCut:['lob'],bangs:['wispy'],sideHair:['layered_sides'],hairTexture:['soft','wavy']}},
+    {id:'hair_messy_layers',group:'髪型',labelJa:'無造作レイヤー',summaryJa:'胸上のロングレイヤー／左右非対称の前髪／段のある襟足',patch:{hairLength:'medium',baseCut:['layered_long'],bangs:['asymmetrical'],sideHair:['layered_sides'],nape:'layered',hairTexture:['messy']}},
+
+    {id:'body_thin_torso',group:'体格',labelJa:'薄い胴体の細身体型',summaryJa:'高身長／細身／薄い胸板／細い首／長めの胴',patch:{height:'tall',silhouette:'slender',muscle:'low',shoulders:'narrow',chest:'slim',neckThickness:'slender',torso:'long'}},
+    {id:'body_flexible_lean',group:'体格',labelJa:'しなやかな体格',summaryJa:'標準身長／しなやか／適度な筋肉／細い首と手足',patch:{height:'average',silhouette:'lean',muscle:'moderate',shoulders:'average',neckThickness:'slender',torso:'balanced',arms:'slender',legs:'slender'}},
+    {id:'body_balanced_standard',group:'体格',labelJa:'均整の取れた標準体格',summaryJa:'標準身長／標準体格／適度な筋肉／標準的な肩・胸・胴',patch:{height:'average',silhouette:'average',muscle:'moderate',shoulders:'average',neckThickness:'average',chest:'average',torso:'balanced'}},
+    {id:'body_sports',group:'体格',labelJa:'スポーツ体型',summaryJa:'高身長／引き締まった体格／幅広い肩／力強い手足',patch:{height:'tall',silhouette:'toned',muscle:'moderate',shoulders:'broad',chest:'average',arms:'strong',legs:'strong'}},
+    {id:'body_solid_boned',group:'体格',labelJa:'骨太でがっしり',summaryJa:'がっしり／筋肉質／幅広い肩／厚い胸板と首',patch:{height:'average',silhouette:'stocky',muscle:'high',shoulders:'broad',neckThickness:'thick',chest:'thick',hands:['broad','knuckled']}},
+    {id:'body_narrow_petite',group:'体格',labelJa:'肩幅狭めの華奢体型',summaryJa:'やや小柄／華奢／細い首／薄い胸板／細い手足',patch:{height:'slightly_short',silhouette:'petite',muscle:'very_low',shoulders:'narrow',neckThickness:'slender',chest:'slim',arms:'slender',legs:'slender'}},
+
+    {id:'color_muted_warm',group:'配色',labelJa:'低彩度暖色',summaryJa:'アッシュブラウン／ヘーゼルの瞳／暖色寄り／低彩度',patch:{hairColor:'ash_brown',irisColor:'hazel',hairTemperature:'warm',hairSaturation:'muted',irisSaturation:'muted'}},
+    {id:'color_black_white',group:'配色',labelJa:'白黒コントラスト',summaryJa:'白髪／黒い瞳／低彩度／高コントラスト',patch:{hairColor:'white',irisColor:'black',hairSaturation:'muted',irisSaturation:'muted',impression:['high_contrast']}},
+    {id:'color_soft_pastel',group:'配色',labelJa:'淡いパステル',summaryJa:'ベージュの髪／ラベンダーの瞳／柔らかな彩度',patch:{hairColor:'beige',irisColor:'lavender',hairTemperature:'neutral',hairSaturation:'soft',irisSaturation:'soft',impression:['soft_coloring']}},
+    {id:'color_deep_jewel',group:'配色',labelJa:'深い宝石色',summaryJa:'紺色の髪／緑の瞳／寒色寄り／鮮やかな配色',patch:{hairColor:'navy',irisColor:'green',hairTemperature:'cool',hairSaturation:'vivid',irisSaturation:'vivid',impression:['vivid']}},
+    {id:'color_red_accent',group:'配色',labelJa:'赤系の差し色',summaryJa:'黒髪／深紅の瞳／鮮やか／高コントラスト',patch:{hairColor:'black',irisColor:'crimson',hairSaturation:'muted',irisSaturation:'vivid',impression:['high_contrast']}},
+    {id:'color_dusty_rose',group:'配色',labelJa:'くすみ配色',summaryJa:'ローズ色の髪／灰色の瞳／低彩度／淡い配色',patch:{hairColor:'rose',irisColor:'gray',hairTemperature:'neutral',hairSaturation:'muted',irisSaturation:'muted',impression:['soft_coloring']}}
   ];
 })(typeof window !== 'undefined' ? window : globalThis);
