@@ -15,12 +15,12 @@
       if(i>=0)list.splice(i,1); else list.push(optionId);
       s.appearance[fieldId]=list;
     }else s.appearance[fieldId]=s.appearance[fieldId]===optionId?null:optionId;
-    s.updatedAt=new Date().toISOString();s=CAW.normalizer.normalize(s);return CAW.face.defaults(s,[fieldId+':'+optionId].filter(function(k){return CAW.face.entries(s).some(function(x){return x.key===k;});}));
+    s.updatedAt=new Date().toISOString();s=CAW.normalizer.normalize(s);CAW.colors.autoOpen(s,fieldId,optionId);return CAW.face.defaults(s,[fieldId+':'+optionId].filter(function(k){return CAW.face.entries(s).some(function(x){return x.key===k;});}));
   }
   function patch(raw,p){
     var s=CAW.normalizer.normalize(raw);
     Object.keys(p||{}).forEach(function(k){var f=D.byField(k);if(f)s.appearance[k]=clone(p[k]);});
-    s.updatedAt=new Date().toISOString(); return CAW.normalizer.normalize(s);
+    s.updatedAt=new Date().toISOString();s=CAW.normalizer.normalize(s);['irisColor','irisPattern','hairMulticolor'].forEach(function(f){if(!Object.prototype.hasOwnProperty.call(p||{},f))return;var values=Array.isArray(s.appearance[f])?s.appearance[f]:[s.appearance[f]];values.filter(Boolean).forEach(function(id){CAW.colors.autoOpen(s,f,id);});});return s;
   }
   function remove(raw,fieldId,optionId){
     var s=CAW.normalizer.normalize(raw),f=D.byField(fieldId);if(!f)return s;

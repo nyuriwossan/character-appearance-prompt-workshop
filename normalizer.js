@@ -16,6 +16,8 @@
     Object.keys(base.customTags).forEach(function(k){base.customTags[k]=arr(custom[k]).map(function(x){return String(x).trim();}).filter(Boolean).filter(function(x,i,a){return a.findIndex(function(y){return y.toLowerCase()===x.toLowerCase();})===i;}).slice(0,30);});
     base.preferences=src.preferences&&typeof src.preferences==='object'?src.preferences:base.preferences;
     base.preferences.openCategories=arr(base.preferences.openCategories).filter(function(id){return D.categories.some(function(c){return c.id===id;});});
+    base.preferences.colorDetails=arr(base.preferences.colorDetails).filter(function(id){return id==='eyes'||id==='hairColor';});
+    if(!src.preferences||!Array.isArray(src.preferences.colorDetails)){['irisColor','irisPattern','hairMulticolor'].forEach(function(f){var v=Array.isArray(base.appearance[f])?base.appearance[f]:[base.appearance[f]];v.filter(Boolean).forEach(function(id){CAW.colors.autoOpen(base,f,id);});});}
     base.metadata=src.metadata&&typeof src.metadata==='object'?src.metadata:{};
     base.faceProfile=CAW.face.sync(base,src.faceProfile);
     return base;

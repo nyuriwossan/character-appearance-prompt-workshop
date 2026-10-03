@@ -50,7 +50,7 @@
   function apply(raw,profile){var s=clear(raw),p=validate(profile);
     D.fields.forEach(function(f){if(!isFace(f.id))return;if(AUX[f.id]&&list(s.appearance[AUX[f.id]]).some(function(id){return !isFace(AUX[f.id],id);}))return;
       var v=p.appearance[f.id];s.appearance[f.id]=f.selectionMode==='multi'?s.appearance[f.id].concat(list(v)):v;
-    });s.customTags.face=p.customTags.face.slice();s.customTags.eyes=p.customTags.eyes.slice();s.faceProfile=p;return CAW.normalizer.normalize(s);
+    });s.customTags.face=p.customTags.face.slice();s.customTags.eyes=p.customTags.eyes.slice();s.faceProfile=p;s=CAW.normalizer.normalize(s);[s.appearance.irisColor].concat(s.appearance.irisPattern).filter(Boolean).forEach(function(id){CAW.colors.autoOpen(s,id===s.appearance.irisColor?'irisColor':'irisPattern',id);});return s;
   }
   function validate(raw){if(!raw||typeof raw!=='object'||!raw.appearance)throw new Error('顔プロファイルの形式を確認してください。');
     var normalized=CAW.normalizer.normalize({appearance:raw.appearance,customTags:raw.customTags,faceProfile:raw});return snapshot(normalized);
@@ -86,8 +86,8 @@
     var missing=results.slice(0,6).filter(function(g){return !g.count;}).map(function(g){return g.label;});
     return {groups:results,message:missing.length?'固定タグに「'+missing.join('・')+'」が未設定です。必要な部位を各1つ、固有の識別点を1つ追加すると比較しやすくなります。':'輪郭・目・眉・鼻・口と識別点が設定されています。角度や表情を変えた画像で同じ特徴が保たれるか確認しましょう。'};
   }
-  function promptTag(s,x){var t=x.en;if(/\b(left|right)\b/.test(t))t+=' ('+(s.faceProfile.leftRightBasis==='screen'?'image-space':'character\'s own')+' left/right)';return t;}
-  function block(raw,l){var s=CAW.normalizer.normalize(raw);return CAW.generator.dedupe(entries(s).filter(function(x){return layer(s,x.key)===l&&(l==='excluded'||x.field!=='glassesUsage'&&x.field!=='piercingUsage');}).filter(function(x){if(l==='excluded')return true;if(/glasses|frame|lenses/i.test(x.field))return s.appearance.glassesUsage!=='none';if(/piercing/i.test(x.field))return s.appearance.piercingUsage!=='none';return true;}).map(function(x){return promptTag(s,x);})).join(', ');}
+  function promptTag(s,x,l){var t=x.custom||l==='excluded'?x.en:CAW.colors.prompt(s,x.field,x.option);if(t&&/\b(left|right)\b/.test(t))t+=' ('+(s.faceProfile.leftRightBasis==='screen'?'image-space':'character\'s own')+' left/right)';return CAW.generator.safePrompt(t);}
+  function block(raw,l){var s=CAW.normalizer.normalize(raw);return CAW.generator.dedupe(entries(s).filter(function(x){return layer(s,x.key)===l&&(l==='excluded'||x.field!=='glassesUsage'&&x.field!=='piercingUsage');}).filter(function(x){if(l==='excluded')return true;if(/glasses|frame|lenses/i.test(x.field))return s.appearance.glassesUsage!=='none';if(/piercing/i.test(x.field))return s.appearance.piercingUsage!=='none';return true;}).map(function(x){return promptTag(s,x,l);})).join(', ');}
   var VIEWS={front:'front view, looking at viewer, neutral expression',threeQuarter:'three-quarter view, 45-degree angle, neutral expression',profile:'side profile view, neutral expression',expression:'front view, gentle smile',eyes:'extreme close-up of both eyes and eyebrows, front view',marks:'close-up portrait, clearly visible facial marks',mirror:'front view, left-right orientation reference',turnaround:'three-view character turnaround, front view, three-quarter view, side profile view, same character'};
   function positive(raw,view){var s=CAW.normalizer.normalize(raw),p=s.faceProfile,parts=[p.triggerWord,block(s,'fixed'),block(s,'variable'),'solo','head-and-shoulders portrait','clear facial visibility','hair pulled away from face','even lighting','plain light background',VIEWS[view]||VIEWS.front];
     if(view==='mirror')parts.push(p.allowMirror?'mirrored orientation permitted':'preserve facial left-right placement, unmirrored reference');

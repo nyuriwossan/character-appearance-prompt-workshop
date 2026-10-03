@@ -2,6 +2,8 @@
   'use strict';
   var CAW=root.CAW,D=CAW.data;
   var ORDER=['basic','face','eyes','features','skin','hairStyle','hairColor','body','marks','impression'];
+  function safePrompt(v){return String(v).replace(/\byoung\s+adults?\b/gi,'young person').replace(/\bmature\s+adults?\b/gi,'mature person').replace(/\b(?:adults?|adlut)\b/gi,'grown person').replace(/\bbust[-\s]+(?:up|portrait)\b/gi,'head-and-shoulders portrait').replace(/\bbust\b/gi,'upper body');}
+  function english(raw,x){return safePrompt(CAW.colors.tag(CAW.normalizer.normalize(raw),x.field.id,x.option.id));}
   function selected(raw){
     var s=CAW.normalizer.normalize(raw),out=[];
     D.fields.forEach(function(f){var values=f.selectionMode==='multi'?s.appearance[f.id]:[s.appearance[f.id]];
@@ -31,13 +33,13 @@
       return true;
     });
   }
-  function detailed(raw){return dedupe(outputItems(raw,'detailed').map(function(x){return x.option.promptEn;}).concat(custom(raw))).join(', ');}
+  function detailed(raw){return dedupe(outputItems(raw,'detailed').map(function(x){return english(raw,x);}).concat(custom(raw).map(safePrompt))).join(', ');}
   function short(raw){
     var items=outputItems(raw,'short').filter(function(x){return x.option.includeInShort;});
-    var chosen=[],seenCat={};items.forEach(function(x){var key=x.field.id;if(!seenCat[key]||['molePosition','scarPosition','piercingPosition'].indexOf(key)>=0){chosen.push(x.option.promptEn);seenCat[key]=1;}});
+    var chosen=[],seenCat={};items.forEach(function(x){var key=x.field.id;if(!seenCat[key]||['molePosition','scarPosition','piercingPosition'].indexOf(key)>=0){chosen.push(english(raw,x));seenCat[key]=1;}});
     return dedupe(chosen).slice(0,18).join(', ');
   }
-  function bodyPrompt(raw){return dedupe(outputItems(raw,'base').map(function(x){return x.option.promptEn;}).concat(custom(raw))).join(', ');}
+  function bodyPrompt(raw){return dedupe(outputItems(raw,'base').map(function(x){return english(raw,x);}).concat(custom(raw).map(safePrompt))).join(', ');}
   function groups(raw,filter){
     var map={};sorted(selected(raw)).filter(filter||function(){return true;}).forEach(function(x){(map[x.field.category]=map[x.field.category]||[]).push(x.option.labelJa);});
     return ORDER.filter(function(k){return map[k];}).map(function(k){var c=D.categories.find(function(x){return x.id===k;});return (c?c.labelJa:k)+'：'+dedupe(map[k]).join('、');}).join('\n');
@@ -45,5 +47,5 @@
   function arrange(raw){var s=CAW.normalizer.normalize(raw);return groups(s,function(x){if(x.field.id==='glassesUsage'||x.field.id==='piercingUsage')return false;return x.option.defaultGroup==='arrange'||(isGlassesField(x.field.id)&&s.appearance.glassesUsage==='optional')||(isPiercingField(x.field.id)&&s.appearance.piercingUsage==='optional');});}
   function basic(raw){var s=CAW.normalizer.normalize(raw);return groups(s,function(x){if(x.field.id==='glassesUsage'||x.field.id==='piercingUsage')return false;if(isGlassesField(x.field.id))return s.appearance.glassesUsage==='usual';if(isPiercingField(x.field.id))return s.appearance.piercingUsage==='usual';return x.option.defaultGroup!=='arrange';});}
   function verify(raw,type){var base=detailed(raw), extra=type==='face'?['solo','head-and-shoulders portrait','upper-body portrait','looking at viewer','neutral expression','simple plain shirt','plain light background','clear facial visibility']:['solo','full body','full-body character reference','standing','centered composition','head to toe','feet visible','entire body visible','neutral pose','simple plain clothing','plain white background'];return dedupe((base?base.split(', '):[]).concat(extra)).join(', ');}
-  CAW.generator={selected:selected,detailed:detailed,short:short,bodyPrompt:bodyPrompt,summaryJa:groups,basicJa:basic,arrangeJa:arrange,faceVerify:function(s){return verify(s,'face');},bodyVerify:function(s){return verify(s,'body');},dedupe:dedupe,order:ORDER};
+  CAW.generator={selected:selected,detailed:detailed,short:short,bodyPrompt:bodyPrompt,summaryJa:groups,basicJa:basic,arrangeJa:arrange,faceVerify:function(s){return verify(s,'face');},bodyVerify:function(s){return verify(s,'body');},dedupe:dedupe,safePrompt:safePrompt,order:ORDER};
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -5,8 +5,8 @@ global.window=global;
 const memory={};
 global.localStorage={getItem:k=>Object.prototype.hasOwnProperty.call(memory,k)?memory[k]:null,setItem:(k,v)=>{memory[k]=String(v);},removeItem:k=>{delete memory[k];}};
 [
-  'data/core.js','data/basic-face.js','data/eyes.js','data/features.js','data/hair.js','data/skin-body.js','data/marks.js','data/presets.js','data/rules.js',
-  'state.js','face-profile.js','normalizer.js','generator.js','advisor.js','storage.js','preset-ui.js'
+  'data/core.js','data/basic-face.js','data/eyes.js','data/features.js','data/hair.js','data/skin-body.js','data/marks.js','data/presets.js','data/appearance-details.js','data/rules.js',
+  'state.js','color-details.js','face-profile.js','normalizer.js','generator.js','advisor.js','storage.js','preset-ui.js'
 ].forEach(file=>vm.runInThisContext(fs.readFileSync(path.join(root,file),'utf8'),{filename:file}));
 let passed=0;
 function ok(value,message){if(!value)throw new Error(message);passed++;}
@@ -44,9 +44,9 @@ CAW.data.presets.forEach(p=>{
     (Array.isArray(value)?value:[value]).forEach(id=>ok(!!CAW.data.byOption(field,id),'プリセット参照候補 '+field+':'+id));
   });
 });
-const expectedPresetCounts={'顔立ち':13,'目元':20,'眉':12,'髪型':21,'体格':15,'配色':17};
+const expectedPresetCounts={'顔立ち':13,'目元':20,'眉':12,'髪型':37,'体格':15,'配色':17};
 eq(Object.fromEntries(CAW.presetUi.groups().map(group=>[group,CAW.presetUi.list(group).length])),expectedPresetCounts,'カテゴリ別プリセット件数');
-ok(CAW.data.presets.length>=90&&CAW.data.presets.length<=100,'プリセット総数90〜100件');
+ok(CAW.data.presets.length===114,'既存98件＋髪型16件');
 const presetIds=new Set(),patchSignatures=new Set();
 CAW.data.presets.forEach(p=>{
   ok(!presetIds.has(p.id),'プリセットID重複なし '+p.id);presetIds.add(p.id);
@@ -159,3 +159,4 @@ ok(/word-break:keep-all/.test(css)&&/brand h1 span/.test(css)&&/intro h2 span/.t
 ok(['face_ethereal','eyes_cold_elongated','brow_thick_parallel','hair_low_ponytail','body_sports','color_deep_jewel'].every(id=>CAW.data.presets.some(p=>p.id===id)),'Phase 2A代表プリセット');
 console.log(`PASS ${passed} assertions | ${options.length} options | ${CAW.data.presets.length} presets | ${CAW.data.rules.length} rules`);
 require('./face-tests.js');
+require('./color-tests.js');

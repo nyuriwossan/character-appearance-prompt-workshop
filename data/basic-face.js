@@ -5,7 +5,7 @@
     'feminine|女性的|feminine appearance','masculine|男性的|masculine appearance','androgynous|中性的|androgynous appearance','boyish|少年らしい|boyish appearance','girlish|少女らしい|girlish appearance'
   ]);
   add({ id:'ageImpression', labelJa:'年齢印象', category:'basic', includeInShort:true, priority:95 },[
-    'child|子ども|child','early_teen|十代前半|early teen','late_teen|十代後半|late teen','young_adult|若い成人|young adult','adult|成人|adult','mature|落ち着いた成人|mature adult'
+    'child|子ども|child','early_teen|十代前半|early teen','late_teen|十代後半|late teen','young_adult|若い成人|young person','adult|成人|grown person','mature|落ち着いた成人|mature person'
   ]);
   add({ id:'overallDirection', labelJa:'全体の外見方向', category:'basic', includeInShort:true, priority:70 },[
     'delicate|繊細|delicate features','soft|柔らかい|soft features','defined|骨格が明瞭|well-defined features','refined|端正|refined features','neutral|自然体|natural appearance'

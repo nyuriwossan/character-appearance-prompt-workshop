@@ -44,9 +44,18 @@
   function customHtml(cat){
     var keys=customMap[cat]||[];return keys.map(function(k){return '<div class="custom-box"><label for="custom-'+k+'">英語の追加タグ（'+customLabels[k]+'）</label><p>カンマ区切り。選択タグと同じ語は出力時に整理します。</p><input id="custom-'+k+'" data-custom="'+k+'" value="'+escapeHtml(state.customTags[k].join(', '))+'" placeholder="例: subtle freckles, narrow pupils"></div>';}).join('');
   }
+  function colorDetailsHtml(cat){
+    var fields=D.fields.filter(function(f){return f.category===cat&&f.colorDetail;}),opened=(state.preferences.colorDetails||[]).indexOf(cat)>=0;
+    if(!fields.length)return '';
+    var modes=state.appearance.hairMulticolor||[],special=modes.filter(function(x){return x!=='none';}),single=modes.indexOf('none')>=0;
+    var shown=fields.filter(function(f){return cat==='eyes'||!special.length||!f.detailModes.length||f.detailModes.some(function(m){return special.indexOf(m)>=0;})||state.appearance[f.id];});
+    var count=fields.filter(function(f){return state.appearance[f.id];}).length;
+    return '<details class="color-details" data-color-details="'+cat+'" '+(opened?'open':'')+'><summary>'+(cat==='eyes'?'瞳色の詳細（左右・虹彩の配色）':'髪色の詳細（部分別の配色）')+(count?' ・ '+count+'項目設定中':'')+'</summary><p class="color-detail-note">'+(cat==='eyes'?'左右は顔IDで選んだ「本人／画面」の基準です。左右の色を指定した場合は、瞳の基本色より優先して出力します。':'髪の左右は本人基準です。部分の色を指定した場合は、その場所の色として出力します。'+(single?' 「単色」が選択中のため詳細色は出力しません。複数色の入れ方から「単色」を解除してください。':''))+'</p><div class="color-detail-grid">'+shown.map(function(f){var o=D.byOption(f.id,state.appearance[f.id]);return '<label class="color-detail-control" for="detail-'+f.id+'"><span>'+escapeHtml(f.labelJa)+'</span><div><span class="swatch" style="background:'+(o?o.colorValue:'#f4f2ed')+'" aria-hidden="true"></span><select id="detail-'+f.id+'" data-detail-field="'+f.id+'"><option value="">未設定</option>'+f.options.map(function(c){return '<option value="'+c.id+'" '+(c.id===state.appearance[f.id]?'selected':'')+'>'+escapeHtml(c.labelJa)+'</option>';}).join('')+'</select></div></label>';}).join('')+'</div></details>';
+  }
+  function categoryFieldsHtml(cat){return D.fields.filter(function(f){return f.category===cat&&!f.colorDetail;}).map(fieldHtml).join('')+colorDetailsHtml(cat)+customHtml(cat);}
   function renderAccordions(){
     $('#accordions').innerHTML=D.categories.map(function(cat,i){var items=categoryItems(cat.id),sum=items.length?items.slice(0,5).map(function(x){return x.option.labelJa;}).join('／'):'未設定';var open=(state.preferences.openCategories||[]).indexOf(cat.id)>=0;
-      return '<article class="accordion"><button class="accordion-head" data-category="'+cat.id+'" aria-expanded="'+open+'" aria-controls="panel-'+cat.id+'"><span class="section-number">'+String(i+1).padStart(2,'0')+'</span><span class="accordion-title">'+escapeHtml(cat.labelJa)+'</span><span class="accordion-summary">'+escapeHtml(sum)+'</span><span class="accordion-chevron" aria-hidden="true">⌄</span></button><div class="accordion-body" id="panel-'+cat.id+'" '+(open?'':'hidden')+'>'+D.fields.filter(function(f){return f.category===cat.id;}).map(fieldHtml).join('')+customHtml(cat.id)+'</div></article>';
+      return '<article class="accordion"><button class="accordion-head" data-category="'+cat.id+'" aria-expanded="'+open+'" aria-controls="panel-'+cat.id+'"><span class="section-number">'+String(i+1).padStart(2,'0')+'</span><span class="accordion-title">'+escapeHtml(cat.labelJa)+'</span><span class="accordion-summary">'+escapeHtml(sum)+'</span><span class="accordion-chevron" aria-hidden="true">⌄</span></button><div class="accordion-body" id="panel-'+cat.id+'" '+(open?'':'hidden')+'>'+categoryFieldsHtml(cat.id)+'</div></article>';
     }).join('');
   }
   function renderSelection(){
@@ -73,6 +82,7 @@
   function copy(text){if(navigator.clipboard&&root.isSecureContext)return navigator.clipboard.writeText(text);var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}finally{ta.remove();}return Promise.resolve();}
   function openLibrary(){renderLibrary();var d=$('#library-dialog');d.showModal();document.body.classList.add('modal-open');}
   document.addEventListener('click',function(e){
+    var summary=e.target.closest('summary'),detail=summary&&summary.parentElement;if(detail&&detail.dataset.colorDetails){var groups=state.preferences.colorDetails||[],cat=detail.dataset.colorDetails,i=groups.indexOf(cat);if(!detail.open&&i<0)groups.push(cat);if(detail.open&&i>=0)groups.splice(i,1);state.preferences.colorDetails=groups;scheduleSave();}
     var b=e.target.closest('button');if(!b)return;
     if(b.dataset.field){state=CAW.state.set(state,b.dataset.field,b.dataset.option);renderAll();return;}
     if(b.dataset.category){var id=b.dataset.category,list=state.preferences.openCategories||[],i=list.indexOf(id);if(i>=0)list.splice(i,1);else list.push(id);state.preferences.openCategories=list;renderAccordions();return;}
@@ -98,10 +108,12 @@
     if(b.dataset.delete){if(confirm('この保存データを削除します。元に戻せません。')){CAW.storage.remove(b.dataset.delete);renderLibrary();toast('削除しました');}return;}
   });
   document.addEventListener('change',function(e){
+    if(e.target.dataset.detailField){var patch={};patch[e.target.dataset.detailField]=e.target.value||null;state=CAW.state.patch(state,patch);renderAll();var el=$('#detail-'+e.target.dataset.detailField);if(el)el.focus();return;}
     if(e.target.dataset.custom){state.customTags[e.target.dataset.custom]=parseCustom(e.target.value);state.updatedAt=new Date().toISOString();renderAll();}
     if(e.target.id==='design-name'){state.name=e.target.value.trim()||'名称未設定';scheduleSave();}
     if(e.target.id==='json-import'&&e.target.files[0]){var reader=new FileReader();reader.onload=function(){try{var parsed=CAW.normalizer.parseJson(reader.result);if(parsed.kind==='design')state=parsed.design;else{if(parsed.faceProfiles.length)CAW.face.importJson(JSON.stringify({type:'character-face-library',profiles:parsed.faceProfiles}));parsed.designs.forEach(function(x){CAW.storage.save(x,x.name);});state=parsed.designs[0]||state;}renderAll();toast('JSONを読み込みました');}catch(err){toast(err.message);}e.target.value='';};reader.readAsText(e.target.files[0]);}
   });
+  document.addEventListener('toggle',function(e){if(!e.target.dataset||!e.target.dataset.colorDetails||!e.target.isConnected)return;var cat=e.target.dataset.colorDetails,groups=state.preferences.colorDetails||[],i=groups.indexOf(cat);if(e.target.open&&i<0)groups.push(cat);if(!e.target.open&&i>=0)groups.splice(i,1);state.preferences.colorDetails=groups;scheduleSave();},true);
   $('#library-dialog').addEventListener('close',function(){document.body.classList.remove('modal-open');});
   $('#preset-dialog').addEventListener('close',function(){pendingPreset=null;document.body.classList.remove('modal-open');});
   function updateBackToTop(){var button=$('#back-to-top');button.hidden=root.scrollY<500;}
