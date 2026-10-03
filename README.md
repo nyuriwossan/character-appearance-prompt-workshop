@@ -2,7 +2,7 @@
 
 日本語UIで1人の人間型キャラクター本人の顔、髪、肌、身体つきを構造的に設計し、画像生成AI向けの英語タグ型プロンプトへ変換する静的Webアプリです。
 
-公開予定URL: <https://nyuriwossan.github.io/character-appearance-prompt-workshop/>
+公開URL: <https://nyuriwossan.github.io/character-appearance-prompt-workshop/>
 
 ## 主な機能
 
@@ -19,7 +19,29 @@
 - 編集中データと全保存データのJSON書き出し、旧形式の正規化、壊れたJSONの安全な拒否
 - 320px級からPCまでのレスポンシブUI、スマホ用に整理したヘッダー、44pxタップ領域、目立つ全項目リセット、固定の「上へ戻る」、iOS向けコピー代替処理
 
-ガチャ、採点、衣装、具体的な表情、ポーズ、構図、背景、人外パーツ、外部APIは含みません。
+通常の外見出力は人物の特徴に限定します。顔確認・学習画像用の出力には角度、表情、照明、背景のテンプレートを追加します。部位診断の数字は設定数の目安で、生成品質の採点ではありません。
+
+## 顔ID・LoRA対応
+
+- 顔骨格・目・眉鼻口・顔のほくろと傷・メガネとピアスを、髪・肌・身体と分けて顔IDに保存
+- 顔ID名、メモ、トリガーワード、固定度の管理メモ、本人／画面の左右基準、反転許可を保持
+- 選択した顔タグの日本語・英語・識別度を一覧表示し、固定／可変／除外を切替
+- 通常の英語出力では固定と可変を使用し、除外をネガティブ側へ分離。旧データは全タグを固定として扱い、従来の出力を維持
+- 顔だけ適用／リセット、別ID保存、上書き保存ごとのバージョン更新、顔JSON・全顔IDバックアップ
+- 相反候補は警告し、タグ解除または「両方残す」を選択可能。大きさ・鼻長・唇厚など既存の単一選択軸はそのまま維持し、英語追加タグと競合する場合もチェック
+- 輪郭・目・眉・鼻・口・識別点・左右差の固定タグ数と、不足する部位を診断
+- 顔固定／可変／ネガティブ、PixAI1行、正面／斜め／横顔／微笑み／目元の学習画像作成用プロンプト
+- ほくろ・傷、左右反転、3面図の顔確認モード。文字・透かし・複数人等は専用ネガティブ欄へ出力
+- 現在の顔と保存顔、保存した2つの顔をタグ・レイヤー・固定プロンプト・トリガー・版で比較
+- 使用／学習モデル、LoRA、代表画像・角度別画像、学習から除く画像、Seed等のメモ
+
+顔IDを適用しても髪・肌・体格と首／鎖骨のほくろ・傷は残します。旧データでは顔と身体のほくろ・傷が大きさ等を共有するため、身体の特徴がある場合は共通項目を身体側の設定で保持します。自由入力の「固有特徴」タグは顔か身体か判別できないため顔IDに含めません。顔の自由タグは「顔」「目」の追加タグ欄をご利用ください。
+
+顔IDの `fixedTags` / `variableTags` / `excludedTags` は `fieldId:optionId`（追加タグは `custom:group:tag`）の参照です。顔JSONには顔だけの `appearance` と `customTags` も保存します。選択IDを正本にすることで英語辞書の修正にも対応します。保存時は `schemaVersion: "0.2"` とし、従来の `0.1` や `selections` 形式を自動移行します。従来の下書き・設計保存のlocalStorageキーは変更しません。全保存バックアップには `faceProfiles` も含まれます。
+
+固定度と生成パラメータは管理用メモです。画像生成やLoRA学習を実行する機能、画像解析、PixAIとのAPI接続はありません。学習用出力は画像を生成するためのプロンプトで、画像の内容を記述する学習キャプションとは用途が異なります。3面図は確認用として、学習には各ビューを切り出して利用してください。
+
+参考： [PixAIのLoRA学習ガイド](https://blog.pixai.art/en/train-lora-on-pixai/)、[キャラクターの一貫性ガイド](https://blog.pixai.art/en/pixai-character-consistency-3-beginner-methods/)。モデルや推奨条件は公式ガイドで確認してください。
 
 ## 役割分担
 
@@ -65,7 +87,9 @@ Node.js 22以降で実行します。外部パッケージは不要です。
 npm test
 ```
 
-データ整合性、状態、旧形式正規化、生成、診断、保存、代表キャラクター5例、静的なUI要件を検査します。`tests.html` ではブラウザのスモークテストも実行できます。
+データ整合性、状態、旧形式正規化、生成、診断、保存、代表キャラクター5例、静的なUI要件を検査します。顔IDの保存／適用／リセット、レイヤー分離、矛盾、左右指定、JSON、共有の身体特徴維持を追加検査します。`tests/legacy-fixtures.json` は改修前のmainから取得した6ケース・8種類の出力で、従来の出力が完全一致することを検査します。`tests.html` ではブラウザのスモークテストも実行できます。
+
+任意の実ブラウザ検証は、開発環境にPlaywrightとChromeを用意して `node tests/browser-tests.cjs` を実行します。別の場所にあるPlaywrightは環境変数 `CAW_PLAYWRIGHT_PATH` で指定できます。アプリ本体と通常の `npm test` に外部依存は不要です。ブラウザ検証は一時プロファイルとローカルサーバーを使い、旧JSON、レイヤー変更、自動保存と再読込、保存／適用／リセット、JSONの書出し・読込、比較、プリセット、確認ビュー、320/375/768/1280pxでの横はみ出しと実行時エラーを確認します。
 
 ## GitHub Pages
 
@@ -84,13 +108,15 @@ npm test
 ## ファイル構成
 
 ```text
-index.html / styles.css / app.js / preset-ui.js
+index.html / styles.css / app.js / preset-ui.js / face-ui.js
+face-profile.js
 state.js / normalizer.js / generator.js / advisor.js / storage.js
 data/
   core.js / basic-face.js / eyes.js / features.js
   hair.js / skin-body.js / marks.js / presets.js / rules.js
 tests/
   run-tests.js
+  face-tests.js / legacy-fixtures.json / browser-tests.cjs
 tests.html
 .github/workflows/deploy-pages.yml
 ```

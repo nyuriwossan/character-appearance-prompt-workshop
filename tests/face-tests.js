@@ -1,0 +1,37 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const F=CAW.face,N=CAW.normalizer,S=CAW.state,G=CAW.generator;
+let count=0;function eq(a,b,label){assert.deepEqual(a,b,label);count++;}function ok(v,label){assert.ok(v,label);count++;}
+const fixtures=JSON.parse(fs.readFileSync(path.join(__dirname,'legacy-fixtures.json'),'utf8'));
+fixtures.forEach((f,i)=>{const s=N.parseJson(JSON.stringify(f.input)).design;Object.keys(f.expected).forEach(mode=>eq(G[mode](s),f.expected[mode],'旧版出力互換 '+i+' '+mode));eq(s.appearance,f.input.appearance,'旧版の選択を全て維持');eq(s.schemaVersion,'0.2','旧JSONを移行');ok(F.entries(s).every(x=>F.layer(s,x.key)==='fixed'),'旧選択のデフォルトは固定');});
+let s=S.patch(S.initial(),{faceShape:'oval',eyeShape:['round','narrow'],irisColor:'gray',browShape:'straight',noseTip:'small',lipRatio:'lower_thicker',molePosition:['below_right_eye','neck','collarbone'],moleSize:'small',scarPosition:['left_brow','neck'],scarType:['thin'],hairColor:'blue',hairLength:'long',height:'tall',silhouette:'slender'});
+s.faceProfile.name='テストの顔';s.faceProfile.memo='右目の下のほくろ';s.faceProfile.triggerWord='face_x7';s.customTags.face=['custom face tag'];s.customTags.hair=['custom hair'];s=N.normalize(s);
+s=F.setLayer(s,'eyeShape:narrow','excluded');s=F.setLayer(s,'irisColor:gray','variable');s=F.setLayer(s,'custom:face:custom face tag','excluded');
+ok(F.block(s,'fixed').includes('oval face')&&!F.block(s,'fixed').includes('gray eyes'),'固定分離');eq(F.block(s,'variable'),'gray eyes','可変分離');ok(F.block(s,'excluded').includes('narrow eyes')&&F.block(s,'excluded').includes('custom face tag'),'除外とカスタム分離');
+ok(!G.detailed(s).includes('narrow eyes')&&!G.detailed(s).includes('custom face tag'),'通常生成から除外');ok(!G.short(s).includes('narrow eyes')&&!G.bodyPrompt(s).includes('narrow eyes'),'短縮・素体から除外');
+const face=F.save(s,false);ok(face.id&&face.name==='テストの顔'&&face.version===1,'新規顔ID保存');ok(!face.appearance.hairColor&&!face.appearance.height,'顔スナップショットに身体・髪なし');eq(face.appearance.molePosition,['below_right_eye'],'顔のほくろだけ抽出');eq(face.appearance.scarPosition,['left_brow'],'顔の傷だけ抽出');
+eq(F.list()[0].excludedTags,face.excludedTags,'保存済み顔のレイヤー維持');
+s.faceProfile=face;const revised=F.save(s,false);eq(revised.version,2,'保存でバージョンを更新');eq(revised.createdAt,face.createdAt,'作成日を保持');
+const separate=F.save(s,true);ok(separate.id!==face.id&&separate.version===1,'別名保存は新規ID');
+let target=S.patch(S.initial(),{faceShape:'square',molePosition:['neck','collarbone'],moleSize:'distinct',scarPosition:['neck'],scarType:['cross'],hairColor:'red',height:'short',skinTone:'light'});target.customTags.hair=['unchanged hair'];
+const before=structuredClone(target.appearance),applied=F.apply(target,face);
+eq(applied.appearance.faceShape,'oval','顔適用');eq(applied.appearance.hairColor,'red','髪維持');eq(applied.appearance.height,'short','身長維持');eq(applied.appearance.skinTone,before.skinTone,'肌維持');eq(applied.appearance.molePosition,['neck','collarbone','below_right_eye'],'身体ほくろ維持');eq(applied.appearance.scarPosition,['neck','left_brow'],'身体傷維持');eq(applied.appearance.moleSize,'distinct','身体の共通サイズ維持');eq(applied.appearance.scarType,['cross'],'身体の共通傷種類維持');eq(applied.customTags.hair,['unchanged hair'],'髪のカスタム維持');eq(applied.faceProfile.triggerWord,'face_x7','トリガー適用');eq(F.layer(applied,'eyeShape:narrow'),'excluded','除外レイヤー適用');
+const cleared=F.clear(applied);eq(cleared.appearance.faceShape,null,'顔リセット');eq(cleared.appearance.molePosition,['neck','collarbone'],'顔リセットで身体のほくろ維持');eq(cleared.appearance.scarPosition,['neck'],'顔リセットで身体の傷維持');eq(cleared.appearance.hairColor,'red','顔リセットで髪維持');eq(cleared.customTags.face,[],'顔カスタムリセット');eq(cleared.faceProfile.triggerWord,'','顔メタデータリセット');ok(F.list().length>=2,'リセットでライブラリを残す');
+CAW.storage.saveDraft(applied);eq(CAW.storage.loadDraft().faceProfile.excludedTags,applied.faceProfile.excludedTags,'自動保存レイヤー復元');eq(CAW.storage.loadDraft().appearance,applied.appearance,'自動保存全選択復元');
+const json=JSON.stringify({type:'character-face-profile',schemaVersion:'0.2',faceProfile:face});const imported=F.importJson(json);eq(imported[0].fixedTags,face.fixedTags,'顔JSON往復');
+const backup=N.parseJson(CAW.storage.libraryJson());ok(backup.faceProfiles.length>=2,'全バックアップに顔ID');
+const libBefore=rootCount();assert.throws(()=>F.importJson('{broken'));assert.throws(()=>F.importJson(JSON.stringify({type:'character-face-library',profiles:[face,{name:'bad'}]})));eq(rootCount(),libBefore,'不正な一括取込は書き込まない');
+function rootCount(){return localStorage.getItem(F.key);}
+let conflict=S.patch(S.initial(),{eyeShape:['round','narrow','monolid'],eyelidFold:'parallel_double',eyeAsymmetry:['even','left_narrower'],faceExtra:['symmetrical_face'],browDetail:['left_notch']});
+ok(F.conflicts(conflict).length>=4,'相反候補検知');eq(conflict.appearance.eyeShape,['round','narrow','monolid'],'警告で選択を変えない');conflict=F.setLayer(conflict,'eyeShape:narrow','excluded');ok(!F.conflicts(conflict).some(x=>x.tags.some(t=>t.key==='eyeShape:narrow')),'ネガティブを矛盾と扱わない');
+const customConf=N.normalize({appearance:{noseLength:'short',lipFullness:'thin',eyeSize:'large'},customTags:{face:['long nose','full lips','small eyes']}});ok(F.conflicts(customConf).length===3,'単一選択項目と追加タグの相反検知');
+Object.keys(F.views).forEach(view=>ok(F.positive(applied,view).includes('solo')&&F.positive(applied,view).includes('clear facial visibility'),'各確認ビューに顔可視性 '+view));
+const one=F.pixai(applied);ok(one.startsWith('face_x7, ')&&!one.includes('\n')&&!one.includes('narrow eyes'),'PixAI1行とトリガー・除外');ok(F.negative(applied).includes('watermark')&&F.negative(applied).includes('multiple people'),'学習ネガティブ');ok(F.positive(applied,'threeQuarter').includes('three-quarter view'),'斜めビュー');ok(F.positive(applied,'profile').includes('side profile view'),'横顔ビュー');
+ok(F.block(applied,'fixed').includes("character's own left/right"),'本人基準明記');applied.faceProfile.leftRightBasis='screen';ok(F.block(applied,'fixed').includes('image-space left/right'),'画面基準明記');ok(F.positive(applied,'mirror').includes('unmirrored'),'反転不可');applied.faceProfile.allowMirror=true;ok(F.positive(applied,'mirror').includes('mirrored orientation permitted'),'反転許可');
+let diagnosed=F.diagnosis(S.patch(S.initial(),{eyeShape:['almond'],irisColor:'gray'}));ok(diagnosed.message.includes('眉')&&diagnosed.message.includes('鼻')&&diagnosed.message.includes('口'),'具体的な不足診断');eq(diagnosed.groups.find(x=>x.label==='目の形').count,1,'部位設定数');
+F.presets.forEach(p=>{const x=F.preset(S.initial(),p.id);ok(G.detailed(x).length>0,'構造プリセット '+p.id);ok(F.entries(x).every(t=>F.layer(x,t.key)==='fixed'),'構造プリセット固定初期値 '+p.id);});
+eq(F.preset(target,'identity').appearance.molePosition,['neck','collarbone','below_right_eye'],'顔の構造プリセットで身体ほくろ維持');
+ok(!F.block(target,'fixed').includes('distinct mole'),'身体だけのほくろの大きさを顔出力に含めない');
+const difference=F.diff(face,F.snapshot(S.patch(applied,{eyeShape:['almond']})));ok(difference.added.some(x=>x.option==='almond')&&difference.removed.some(x=>x.option==='round'),'選択差分');
+let change=S.set(S.initial(),'eyeHighlights','natural');eq(F.layer(change,'eyeHighlights:natural'),'variable','新規ハイライトは可変');change=F.setLayer(change,'eyeHighlights:natural','fixed');change=S.set(change,'eyeShape','almond');eq(F.layer(change,'eyeHighlights:natural'),'fixed','別タグの選択で明示レイヤー維持');change=S.set(change,'eyeHighlights','natural');eq(change.faceProfile.variableTags,[],'解除で古い参照除去');
+console.log('PASS '+count+' face identity assertions | '+fixtures.length+' legacy output fixtures');

@@ -6,7 +6,7 @@ const memory={};
 global.localStorage={getItem:k=>Object.prototype.hasOwnProperty.call(memory,k)?memory[k]:null,setItem:(k,v)=>{memory[k]=String(v);},removeItem:k=>{delete memory[k];}};
 [
   'data/core.js','data/basic-face.js','data/eyes.js','data/features.js','data/hair.js','data/skin-body.js','data/marks.js','data/presets.js','data/rules.js',
-  'state.js','normalizer.js','generator.js','advisor.js','storage.js','preset-ui.js'
+  'state.js','face-profile.js','normalizer.js','generator.js','advisor.js','storage.js','preset-ui.js'
 ].forEach(file=>vm.runInThisContext(fs.readFileSync(path.join(root,file),'utf8'),{filename:file}));
 let passed=0;
 function ok(value,message){if(!value)throw new Error(message);passed++;}
@@ -70,7 +70,7 @@ eq(previewState.appearance.eyeShape,[],'プリセット適用後に個別解除'
 CAW.data.rules.forEach(r=>ok(r.id&&['hard','warning','info','suggestion'].includes(r.level),'ルール必須値'));
 
 let s=CAW.state.initial();
-ok(s.type==='character-appearance-design'&&s.schemaVersion==='0.1','初期状態');
+ok(s.type==='character-appearance-design'&&s.schemaVersion==='0.2','初期状態');
 ok(Object.keys(s.appearance).length===CAW.data.fields.length,'全フィールド初期化');
 s=CAW.state.set(s,'faceShape','oval');eq(s.appearance.faceShape,'oval','単一選択追加');
 s=CAW.state.set(s,'faceShape','round');eq(s.appearance.faceShape,'round','単一選択置換');
@@ -158,3 +158,4 @@ ok(/\.preset-grid\{[^}]*repeat\(4/.test(css)&&/@media\(max-width:700px\)[\s\S]*?
 ok(/word-break:keep-all/.test(css)&&/brand h1 span/.test(css)&&/intro h2 span/.test(css),'タイトルと導入見出しの意味単位改行');
 ok(['face_ethereal','eyes_cold_elongated','brow_thick_parallel','hair_low_ponytail','body_sports','color_deep_jewel'].every(id=>CAW.data.presets.some(p=>p.id===id)),'Phase 2A代表プリセット');
 console.log(`PASS ${passed} assertions | ${options.length} options | ${CAW.data.presets.length} presets | ${CAW.data.rules.length} rules`);
+require('./face-tests.js');

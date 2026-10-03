@@ -7,7 +7,7 @@
   function $(s,p){return(p||document).querySelector(s);}function $$(s,p){return Array.from((p||document).querySelectorAll(s));}
   function escapeHtml(v){return String(v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function toast(msg){var el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){el.classList.remove('show');},2200);}
-  function scheduleSave(){var el=$('#save-status');el.textContent='保存中…';clearTimeout(scheduleSave.t);scheduleSave.t=setTimeout(function(){CAW.storage.saveDraft(state);el.textContent='自動保存済み';},180);}
+  function scheduleSave(){var el=$('#save-status');el.textContent='保存中…';clearTimeout(scheduleSave.t);scheduleSave.t=setTimeout(function(){try{CAW.storage.saveDraft(state);el.textContent='自動保存済み';}catch(e){el.textContent='保存できません';toast('保存できません。JSONを書き出して保管してください。');}},180);}
   function isSelected(f,id){var v=state.appearance[f.id];return Array.isArray(v)?v.indexOf(id)>=0:v===id;}
   function categoryItems(cat){return CAW.generator.selected(state).filter(function(x){return x.field.category===cat;});}
   function renderPresets(){
@@ -67,7 +67,7 @@
   function renderLibrary(){
     var items=CAW.storage.list();$('#library-list').innerHTML=items.length?items.map(function(x){return '<article class="library-card"><h3>'+escapeHtml(x.name)+'</h3><p class="library-meta">'+CAW.generator.selected(x).length+'項目 ・ 更新 '+new Date(x.updatedAt).toLocaleString('ja-JP')+'</p><div class="library-actions"><button class="button primary" data-load="'+x.id+'">読み込む</button><button class="button" data-duplicate="'+x.id+'">複製</button><button class="button danger" data-delete="'+x.id+'">削除</button></div></article>';}).join(''):'<p class="all-clear">名前を付けて保存した設計はまだありません。</p>';
   }
-  function renderAll(){renderAccordions();renderSelection();renderDiagnostics();renderOutputs();$('#design-name').value=state.name;scheduleSave();}
+  function renderAll(){state=CAW.normalizer.normalize(state);renderAccordions();renderSelection();renderDiagnostics();renderOutputs();CAW.faceUi.render();$('#design-name').value=state.name;scheduleSave();}
   function parseCustom(v){var seen={};return String(v).split(',').map(function(x){return x.trim();}).filter(Boolean).filter(function(x){var k=x.toLowerCase();if(seen[k])return false;seen[k]=1;return true;}).slice(0,30);}
   function download(name,text){var blob=new Blob([text],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);}
   function copy(text){if(navigator.clipboard&&root.isSecureContext)return navigator.clipboard.writeText(text);var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}finally{ta.remove();}return Promise.resolve();}
@@ -79,7 +79,7 @@
     if(b.dataset.presetGroup){activePresetGroup=b.dataset.presetGroup;renderPresets();return;}
     if(b.hasAttribute('data-preset-more')){expandedPresetGroups[activePresetGroup]=!expandedPresetGroups[activePresetGroup];renderPresets();return;}
     if(b.dataset.preset){var p=D.presets.find(function(x){return x.id===b.dataset.preset;});if(p)openPresetReview(p);return;}
-    if(b.hasAttribute('data-confirm-preset')){if(pendingPreset){var applied=pendingPreset;state=CAW.state.patch(state,applied.patch);pendingPreset=null;$('#preset-dialog').close();document.body.classList.remove('modal-open');renderAll();toast('「'+applied.labelJa+'」を適用しました');}return;}
+    if(b.hasAttribute('data-confirm-preset')){if(pendingPreset){var applied=pendingPreset;state=applied.facePreset?CAW.face.preset(state,applied.facePreset):CAW.state.patch(state,applied.patch);pendingPreset=null;$('#preset-dialog').close();document.body.classList.remove('modal-open');renderAll();toast('「'+applied.labelJa+'」を適用しました');}return;}
     if(b.hasAttribute('data-close-preset-dialog')){pendingPreset=null;$('#preset-dialog').close();document.body.classList.remove('modal-open');return;}
     if(b.id==='selection-toggle'){var list=$('#selection-list'),open=list.hidden;list.hidden=!open;b.setAttribute('aria-expanded',String(open));return;}
     if(b.dataset.removeField){state=CAW.state.remove(state,b.dataset.removeField,b.dataset.option);renderAll();return;}
@@ -100,11 +100,12 @@
   document.addEventListener('change',function(e){
     if(e.target.dataset.custom){state.customTags[e.target.dataset.custom]=parseCustom(e.target.value);state.updatedAt=new Date().toISOString();renderAll();}
     if(e.target.id==='design-name'){state.name=e.target.value.trim()||'名称未設定';scheduleSave();}
-    if(e.target.id==='json-import'&&e.target.files[0]){var reader=new FileReader();reader.onload=function(){try{var parsed=CAW.normalizer.parseJson(reader.result);if(parsed.kind==='design')state=parsed.design;else{parsed.designs.forEach(function(x){CAW.storage.save(x,x.name);});state=parsed.designs[0]||state;}renderAll();toast('JSONを読み込みました');}catch(err){toast(err.message);}e.target.value='';};reader.readAsText(e.target.files[0]);}
+    if(e.target.id==='json-import'&&e.target.files[0]){var reader=new FileReader();reader.onload=function(){try{var parsed=CAW.normalizer.parseJson(reader.result);if(parsed.kind==='design')state=parsed.design;else{if(parsed.faceProfiles.length)CAW.face.importJson(JSON.stringify({type:'character-face-library',profiles:parsed.faceProfiles}));parsed.designs.forEach(function(x){CAW.storage.save(x,x.name);});state=parsed.designs[0]||state;}renderAll();toast('JSONを読み込みました');}catch(err){toast(err.message);}e.target.value='';};reader.readAsText(e.target.files[0]);}
   });
   $('#library-dialog').addEventListener('close',function(){document.body.classList.remove('modal-open');});
   $('#preset-dialog').addEventListener('close',function(){pendingPreset=null;document.body.classList.remove('modal-open');});
   function updateBackToTop(){var button=$('#back-to-top');button.hidden=root.scrollY<500;}
   root.addEventListener('scroll',updateBackToTop,{passive:true});
+  CAW.faceUi.init({get:function(){return state;},set:function(s){state=s;renderAll();},save:scheduleSave,toast:toast,download:download,preset:openPresetReview});
   state=CAW.storage.loadDraft();renderPresets();renderAll();updateBackToTop();
 })(window);

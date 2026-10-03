@@ -9,6 +9,6 @@
   function save(s,name){var x=CAW.normalizer.normalize(s),items=list(),i=items.findIndex(function(v){return v.id===x.id;});x.name=(name||x.name||'名称未設定').trim().slice(0,80);x.updatedAt=new Date().toISOString();if(i>=0)items[i]=x;else items.unshift(x);put(LIB,items.slice(0,100));return x;}
   function remove(id){put(LIB,list().filter(function(x){return x.id!==id;}));}
   function duplicate(id){var x=list().find(function(v){return v.id===id;});if(!x)return null;x=CAW.normalizer.normalize(x);x.id=CAW.state.uuid();x.name=x.name+'（複製）';x.createdAt=x.updatedAt=new Date().toISOString();return save(x,x.name);}
-  function libraryJson(){return JSON.stringify({type:'character-appearance-library',schemaVersion:'0.1',exportedAt:new Date().toISOString(),designs:list()},null,2);}
+  function libraryJson(){return JSON.stringify({type:'character-appearance-library',schemaVersion:'0.2',exportedAt:new Date().toISOString(),designs:list(),faceProfiles:CAW.face.list()},null,2);}
   CAW.storage={loadDraft:loadDraft,saveDraft:saveDraft,list:list,save:save,remove:remove,duplicate:duplicate,libraryJson:libraryJson,keys:{draft:KEY,library:LIB}};
 })(typeof window !== 'undefined' ? window : globalThis);

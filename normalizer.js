@@ -17,10 +17,11 @@
     base.preferences=src.preferences&&typeof src.preferences==='object'?src.preferences:base.preferences;
     base.preferences.openCategories=arr(base.preferences.openCategories).filter(function(id){return D.categories.some(function(c){return c.id===id;});});
     base.metadata=src.metadata&&typeof src.metadata==='object'?src.metadata:{};
+    base.faceProfile=CAW.face.sync(base,src.faceProfile);
     return base;
   }
   function parseJson(text){var value;try{value=JSON.parse(text);}catch(e){throw new Error('JSONの形式を確認してください。');}
-    if(value&&value.type==='character-appearance-library'&&Array.isArray(value.designs))return {kind:'library',designs:value.designs.map(normalize)};
+    if(value&&value.type==='character-appearance-library'&&Array.isArray(value.designs))return {kind:'library',designs:value.designs.map(normalize),faceProfiles:arr(value.faceProfiles).map(CAW.face.validate)};
     if(!value||(!value.appearance&&!value.selections))throw new Error('外見設計データが見つかりません。');
     return {kind:'design',design:normalize(value)};
   }
