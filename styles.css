@@ -40,6 +40,8 @@ main{padding:26px 20px 100px}.panel,.section{margin-bottom:28px}.panel{backgroun
 @media(max-width:300px){.brand h1{display:block;white-space:normal}.brand h1 span{display:block}.preset-grid{grid-template-columns:1fr}.preset-impact-stats{grid-template-columns:1fr}.preset-impact-stats span{min-height:52px}}
 
 /* Face ID workbench */
+.color-details{border:1px solid var(--line);border-radius:13px;background:#f1f4f1;padding:4px 14px;margin-bottom:18px}.color-details summary{min-height:48px;padding:12px 0;cursor:pointer;font-size:14px;font-weight:750}.color-detail-note{font-size:12px;color:var(--muted);margin:3px 0 14px}.color-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding-bottom:14px}.color-detail-control{min-width:0;font-size:12px;font-weight:700}.color-detail-control>div{display:flex;align-items:center;gap:8px;margin-top:5px}.color-detail-control select{width:100%;min-width:0;min-height:44px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:8px 10px;font-size:13px}.color-detail-control .swatch{width:20px;height:20px}
+@media(max-width:700px){.color-detail-grid{grid-template-columns:1fr}.color-details{padding-inline:11px}}
 select,textarea{font:inherit;color:inherit}
 select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid rgba(155,93,85,.35);outline-offset:2px}
 .face-workbench{padding:26px;background:linear-gradient(145deg,#fffefa,#f0f4ef)}

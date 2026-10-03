@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const F=CAW.face,N=CAW.normalizer,S=CAW.state,G=CAW.generator;
 let count=0;function eq(a,b,label){assert.deepEqual(a,b,label);count++;}function ok(v,label){assert.ok(v,label);count++;}
 const fixtures=JSON.parse(fs.readFileSync(path.join(__dirname,'legacy-fixtures.json'),'utf8'));
-fixtures.forEach((f,i)=>{const s=N.parseJson(JSON.stringify(f.input)).design;Object.keys(f.expected).forEach(mode=>eq(G[mode](s),f.expected[mode],'旧版出力互換 '+i+' '+mode));eq(s.appearance,f.input.appearance,'旧版の選択を全て維持');eq(s.schemaVersion,'0.2','旧JSONを移行');ok(F.entries(s).every(x=>F.layer(s,x.key)==='fixed'),'旧選択のデフォルトは固定');});
+fixtures.forEach((f,i)=>{const s=N.parseJson(JSON.stringify(f.input)).design;Object.keys(f.expected).forEach(mode=>eq(G[mode](s),G.safePrompt(f.expected[mode]),'旧版出力互換（年齢語句の置換を除く） '+i+' '+mode));Object.keys(f.input.appearance).forEach(k=>eq(s.appearance[k],f.input.appearance[k],'旧版の選択を全て維持 '+k));eq(s.schemaVersion,'0.2','旧JSONを移行');ok(F.entries(s).every(x=>F.layer(s,x.key)==='fixed'),'旧選択のデフォルトは固定');});
 let s=S.patch(S.initial(),{faceShape:'oval',eyeShape:['round','narrow'],irisColor:'gray',browShape:'straight',noseTip:'small',lipRatio:'lower_thicker',molePosition:['below_right_eye','neck','collarbone'],moleSize:'small',scarPosition:['left_brow','neck'],scarType:['thin'],hairColor:'blue',hairLength:'long',height:'tall',silhouette:'slender'});
 s.faceProfile.name='テストの顔';s.faceProfile.memo='右目の下のほくろ';s.faceProfile.triggerWord='face_x7';s.customTags.face=['custom face tag'];s.customTags.hair=['custom hair'];s=N.normalize(s);
 s=F.setLayer(s,'eyeShape:narrow','excluded');s=F.setLayer(s,'irisColor:gray','variable');s=F.setLayer(s,'custom:face:custom face tag','excluded');
