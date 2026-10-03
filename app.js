@@ -77,6 +77,14 @@
     var items=CAW.storage.list();$('#library-list').innerHTML=items.length?items.map(function(x){return '<article class="library-card"><h3>'+escapeHtml(x.name)+'</h3><p class="library-meta">'+CAW.generator.selected(x).length+'項目 ・ 更新 '+new Date(x.updatedAt).toLocaleString('ja-JP')+'</p><div class="library-actions"><button class="button primary" data-load="'+x.id+'">読み込む</button><button class="button" data-duplicate="'+x.id+'">複製</button><button class="button danger" data-delete="'+x.id+'">削除</button></div></article>';}).join(''):'<p class="all-clear">名前を付けて保存した設計はまだありません。</p>';
   }
   function renderAll(){state=CAW.normalizer.normalize(state);renderAccordions();renderSelection();renderDiagnostics();renderOutputs();CAW.faceUi.render();$('#design-name').value=state.name;scheduleSave();}
+  function refreshSelectResults(){
+    // Keep native selects attached until their picker finishes committing.
+    state=CAW.normalizer.normalize(state);
+    $$('[data-detail-field]').forEach(function(el){var id=el.dataset.detailField,o=D.byOption(id,state.appearance[id]),v=state.appearance[id]||'';if(el.value!==v)el.value=v;$('.swatch',el.parentElement).style.background=o?o.colorValue:'#f4f2ed';});
+    $$('[data-color-details]').forEach(function(el){var cat=el.dataset.colorDetails,count=D.fields.filter(function(f){return f.category===cat&&f.colorDetail&&state.appearance[f.id];}).length;$('summary',el).textContent=(cat==='eyes'?'瞳色の詳細（左右・虹彩の配色）':'髪色の詳細（部分別の配色）')+(count?' ・ '+count+'項目設定中':'');});
+    D.categories.forEach(function(cat){var head=$('[data-category="'+cat.id+'"]'),items=categoryItems(cat.id);if(head)$('.accordion-summary',head).textContent=items.length?items.slice(0,5).map(function(x){return x.option.labelJa;}).join('／'):'未設定';});
+    renderSelection();renderDiagnostics();renderOutputs();CAW.faceUi.render({preserveControls:true});scheduleSave();
+  }
   function parseCustom(v){var seen={};return String(v).split(',').map(function(x){return x.trim();}).filter(Boolean).filter(function(x){var k=x.toLowerCase();if(seen[k])return false;seen[k]=1;return true;}).slice(0,30);}
   function download(name,text){var blob=new Blob([text],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);}
   function copy(text){if(navigator.clipboard&&root.isSecureContext)return navigator.clipboard.writeText(text);var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}finally{ta.remove();}return Promise.resolve();}
@@ -108,7 +116,7 @@
     if(b.dataset.delete){if(confirm('この保存データを削除します。元に戻せません。')){CAW.storage.remove(b.dataset.delete);renderLibrary();toast('削除しました');}return;}
   });
   document.addEventListener('change',function(e){
-    if(e.target.dataset.detailField){var patch={};patch[e.target.dataset.detailField]=e.target.value||null;state=CAW.state.patch(state,patch);renderAll();var el=$('#detail-'+e.target.dataset.detailField);if(el)el.focus();return;}
+    if(e.target.dataset.detailField){var patch={};patch[e.target.dataset.detailField]=e.target.value||null;state=CAW.state.patch(state,patch);refreshSelectResults();return;}
     if(e.target.dataset.custom){state.customTags[e.target.dataset.custom]=parseCustom(e.target.value);state.updatedAt=new Date().toISOString();renderAll();}
     if(e.target.id==='design-name'){state.name=e.target.value.trim()||'名称未設定';scheduleSave();}
     if(e.target.id==='json-import'&&e.target.files[0]){var reader=new FileReader();reader.onload=function(){try{var parsed=CAW.normalizer.parseJson(reader.result);if(parsed.kind==='design')state=parsed.design;else{if(parsed.faceProfiles.length)CAW.face.importJson(JSON.stringify({type:'character-face-library',profiles:parsed.faceProfiles}));parsed.designs.forEach(function(x){CAW.storage.save(x,x.name);});state=parsed.designs[0]||state;}renderAll();toast('JSONを読み込みました');}catch(err){toast(err.message);}e.target.value='';};reader.readAsText(e.target.files[0]);}
@@ -118,6 +126,6 @@
   $('#preset-dialog').addEventListener('close',function(){pendingPreset=null;document.body.classList.remove('modal-open');});
   function updateBackToTop(){var button=$('#back-to-top');button.hidden=root.scrollY<500;}
   root.addEventListener('scroll',updateBackToTop,{passive:true});
-  CAW.faceUi.init({get:function(){return state;},set:function(s){state=s;renderAll();},save:scheduleSave,toast:toast,download:download,preset:openPresetReview});
+  CAW.faceUi.init({get:function(){return state;},set:function(s){state=s;renderAll();},update:function(s){state=s;refreshSelectResults();},save:scheduleSave,toast:toast,download:download,preset:openPresetReview});
   state=CAW.storage.loadDraft();renderPresets();renderAll();updateBackToTop();
 })(window);
