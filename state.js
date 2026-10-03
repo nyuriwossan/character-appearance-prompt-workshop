@@ -6,7 +6,7 @@
   function initial(){
     var now=new Date().toISOString(), selections={};
     D.fields.forEach(function(f){selections[f.id]=f.selectionMode==='multi'?[]:null;});
-    return {type:'character-appearance-design',schemaVersion:'0.1',id:uuid(),name:'名称未設定',createdAt:now,updatedAt:now,appearance:selections,customTags:{face:[],eyes:[],hair:[],skin:[],body:[],marks:[],general:[]},preferences:{openCategories:['basic']},metadata:{}};
+    return {type:'character-appearance-design',schemaVersion:'0.2',id:uuid(),name:'名称未設定',createdAt:now,updatedAt:now,appearance:selections,customTags:{face:[],eyes:[],hair:[],skin:[],body:[],marks:[],general:[]},preferences:{openCategories:['basic']},metadata:{},faceProfile:CAW.face.normalizeProfile(null)};
   }
   function set(raw,fieldId,optionId){
     var s=CAW.normalizer.normalize(raw), f=D.byField(fieldId); if(!f)return s;
@@ -15,7 +15,7 @@
       if(i>=0)list.splice(i,1); else list.push(optionId);
       s.appearance[fieldId]=list;
     }else s.appearance[fieldId]=s.appearance[fieldId]===optionId?null:optionId;
-    s.updatedAt=new Date().toISOString(); return s;
+    s.updatedAt=new Date().toISOString();s=CAW.normalizer.normalize(s);return CAW.face.defaults(s,[fieldId+':'+optionId].filter(function(k){return CAW.face.entries(s).some(function(x){return x.key===k;});}));
   }
   function patch(raw,p){
     var s=CAW.normalizer.normalize(raw);

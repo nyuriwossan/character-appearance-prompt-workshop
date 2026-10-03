@@ -34,12 +34,32 @@
         <p class="eyebrow">APPEARANCE BLUEPRINT</p>
         <h2><span>顔・髪・肌・身体つきを</span><span>必要なところから設計。</span></h2>
       </div>
-      <p>衣装、表情、ポーズ、背景は別の工房で追加します。選択内容はこの端末へ自動保存され、未設定の項目は出力しません。</p>
+      <p>外見を組み立て、顔IDとして再利用。固定する特徴と変える特徴を分けて、PixAI・顔LoRA用のプロンプトも作れます。選択内容はこの端末へ自動保存されます。</p>
     </section>
 
     <section class="section" aria-labelledby="preset-title">
       <div class="section-heading"><div><p class="eyebrow">STARTING POINTS</p><h2 id="preset-title">部分プリセット</h2></div><p>関連項目だけをまとめて仮入力します。適用後も一つずつ変更できます。</p></div>
       <div id="preset-groups" class="preset-groups"></div>
+    </section>
+
+    <section class="section face-workbench panel" aria-labelledby="face-title">
+      <div class="section-heading"><div><p class="eyebrow">FACE ID STUDIO</p><h2 id="face-title">同じ顔を、何度でも。</h2></div><p>髪型や身体つきを残して、顔だけ保存・適用できます。</p></div>
+      <div class="face-meta-grid">
+        <label>顔ID名<input id="face-name" data-face-meta="name" maxlength="80" placeholder="例：リナ 顔 v1"></label>
+        <label>トリガーワード<input id="face-trigger" data-face-meta="triggerWord" maxlength="120" placeholder="例：lina_face_x7"></label>
+        <label>左右の基準<select id="face-basis" data-face-meta="leftRightBasis"><option value="character">本人から見た左／右</option><option value="screen">画面上の左／右</option></select></label>
+        <label>顔の固定度<select id="face-strength" data-face-meta="strength"><option value="strict">固定</option><option value="standard">標準</option><option value="loose">ゆるめ</option></select></label>
+      </div>
+      <p class="face-hint">トリガーワードは学習時に指定する固有文字列です。既存の単語やキャラクター名と重ならない文字列がおすすめ。固定度は管理メモで、生成モデルの強度には連動しません。</p>
+      <label class="face-memo-label">顔のメモ<textarea id="face-memo" data-face-meta="memo" maxlength="2000" rows="2" placeholder="例：細い目、右目の下のほくろ"></textarea></label>
+      <label class="mirror-label"><input id="face-mirror" type="checkbox" data-face-meta="allowMirror">左右反転を許可する</label>
+      <p id="face-orientation" class="face-hint"></p>
+      <div class="action-row"><button class="button primary" data-face-save>現在の顔を保存</button><button class="button" data-face-new>別の顔IDとして保存</button><button class="button" data-face-library>顔プロファイル一覧</button><button class="button" data-face-export>顔プロファイルを書き出し</button><label class="button file-button">顔プロファイルを読み込み<input id="face-import" type="file" accept="application/json,.json"></label><button class="button danger" data-face-reset>顔だけリセット</button></div>
+      <p id="face-version" class="face-hint"></p>
+      <details class="face-details"><summary>構造プリセット・固定タグの管理</summary><div id="face-presets" class="face-preset-row"></div><p class="face-hint">選択後に固定／可変／除外を切り替えます。除外はネガティブに出力し、通常の英語プロンプトには含めません。「高・中・低」は識別度の目安です。</p><div id="face-layers" class="face-layer-list"></div></details>
+      <div id="face-conflicts" class="face-conflicts" aria-live="polite"></div>
+      <details class="face-details"><summary>部位ごとの固定タグを確認</summary><div id="face-scores" class="face-score-grid"></div><p id="face-advice" class="face-hint"></p></details>
+      <details class="face-details"><summary>LoRA・代表画像・生成パラメータのメモ</summary><div id="face-notes" class="face-meta-grid"></div></details>
     </section>
 
     <section id="selection-dock" class="selection-dock" aria-label="選択中の日本語タグ">
@@ -62,6 +82,9 @@
     <section class="section output-section" aria-labelledby="output-title">
       <div class="section-heading"><div><p class="eyebrow">OUTPUT</p><h2 id="output-title">出力</h2></div><p>意味順に整理し、重複を除いた結果です。</p></div>
       <div id="outputs" class="output-grid"></div>
+      <div class="section-heading face-output-heading"><div><p class="eyebrow">IDENTITY & DATASET</p><h2>顔ID・LoRA用の出力</h2></div><p>ポジティブとネガティブを、それぞれの入力欄へコピーしてください。</p></div>
+      <div id="face-outputs" class="output-grid"></div>
+      <details class="face-details"><summary>顔確認・学習画像のバリエーション</summary><label class="face-view-label">確認目的<select id="face-view"><option value="front">正面確認</option><option value="threeQuarter">斜め45度確認</option><option value="profile">横顔確認</option><option value="expression">表情差分確認</option><option value="eyes">目元拡大確認</option><option value="marks">ほくろ・傷確認</option><option value="mirror">左右反転チェック</option><option value="turnaround">3面図／ターンアラウンド</option></select></label><div id="face-verification" class="output-grid"></div><p class="face-hint">表情差分は微笑みの例です。表情・照明は画像ごとに変更してください。学習用画像は1人で、顔の特徴が見える構図を使います。3面図は比較用として、学習画像には各ビューを切り出して使ってください。</p><div id="face-dataset" class="output-grid"></div></details>
     </section>
 
     <section class="section save-section panel" aria-labelledby="save-title">
@@ -100,6 +123,7 @@
       </div>
     </div>
   </dialog>
+  <dialog id="face-library-dialog" class="modal" aria-labelledby="face-library-title"><div class="modal-head"><div><p class="eyebrow">FACE LIBRARY</p><h2 id="face-library-title">顔プロファイル一覧</h2></div><button class="icon-button" data-face-close aria-label="閉じる">×</button></div><p class="modal-note">保存した顔を適用すると顔設定を差し替えます。髪・肌・体格、首や鎖骨のほくろ・傷は残します。身体と共通のほくろ・傷の大きさ等は身体側の設定を優先します。</p><div id="face-library-list" class="library-list"></div><div id="face-comparison" class="face-comparison"></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <button id="back-to-top" class="back-to-top" data-back-to-top hidden aria-label="ページ上部へ戻る">↑ 上へ戻る</button>
 
@@ -113,11 +137,13 @@
   <script src="data/presets.js"></script>
   <script src="data/rules.js"></script>
   <script src="state.js"></script>
+  <script src="face-profile.js"></script>
   <script src="normalizer.js"></script>
   <script src="generator.js"></script>
   <script src="advisor.js"></script>
   <script src="storage.js"></script>
   <script src="preset-ui.js"></script>
+  <script src="face-ui.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

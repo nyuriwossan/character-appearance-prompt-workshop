@@ -10,13 +10,14 @@
   }
   function dedupe(list){var seen={};return list.map(function(x){return String(x).trim();}).filter(Boolean).filter(function(x){var k=x.toLowerCase().replace(/\s+/g,' ');if(seen[k])return false;seen[k]=1;return true;});}
   function sorted(items){return items.slice().sort(function(a,b){var c=ORDER.indexOf(a.field.category)-ORDER.indexOf(b.field.category);return c||b.option.priority-a.option.priority||a.option.sortOrder-b.option.sortOrder;});}
-  function custom(raw){var s=CAW.normalizer.normalize(raw),out=[];Object.keys(s.customTags).forEach(function(k){out=out.concat(s.customTags[k]);});return out;}
+  function custom(raw){var s=CAW.normalizer.normalize(raw),out=[];Object.keys(s.customTags).forEach(function(k){out=out.concat(s.customTags[k].filter(function(tag){return CAW.face.layer(s,'custom:'+k+':'+tag)!=='excluded';}));});return out;}
   function isGlassesField(id){return ['glassesShape','frameThickness','frameColor','lenses'].indexOf(id)>=0;}
   function isPiercingField(id){return ['piercingPosition','piercingCount','piercingStyle'].indexOf(id)>=0;}
   function outputItems(raw,mode){
     var s=CAW.normalizer.normalize(raw);
     return sorted(selected(s)).filter(function(x){
       var id=x.field.id;
+      if(CAW.face.isFace(id,x.option.id)&&CAW.face.layer(s,id+':'+x.option.id)==='excluded')return false;
       if(id==='glassesUsage'||id==='piercingUsage')return false;
       if(isGlassesField(id)){
         if(s.appearance.glassesUsage==='none')return false;
