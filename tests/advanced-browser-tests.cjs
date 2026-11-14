@@ -67,11 +67,11 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+decodeU
   await page.locator('[data-field="hairMulticolor"][data-option="none"]').click();await page.locator('[data-field="hairMulticolor"][data-option="gradient"]').click();assert((await text('advanced')).includes('pink hair tips (#FF66AA)'),'Restored when gradient returns');
 
   // 顔ID：瞳のHEXだけを保存・復元。髪と肌のHEXは残る。
-  await page.locator('#face-name').fill('HEX確認の顔');await page.locator('[data-face-save]').click();await page.waitForFunction(()=>JSON.parse(localStorage.getItem('caw_face_library_v1')||'[]').length===1);
+  await page.locator('#tab-face').click();await page.locator('#face-name').fill('HEX確認の顔');await page.locator('[data-face-save]').click();await page.waitForFunction(()=>JSON.parse(localStorage.getItem('caw_face_library_v1')||'[]').length===1);
   assert.deepEqual(await page.evaluate(()=>JSON.parse(localStorage.getItem('caw_face_library_v1'))[0].hexColors),{irisColor:'#748DA8'});
   await page.locator('[data-face-reset]').click();await page.waitForFunction(()=>document.getElementById('face-name').value==='');assert.equal(await page.locator('[data-hex-input="irisColor"]').inputValue(),'','Face reset clears eye HEX');assert.equal(await page.locator('[data-hex-input="hairColor"]').inputValue(),'#C8CCD6');assert.equal(await page.locator('[data-hex-input="skinTone"]').inputValue(),'#F4DED8');
   await page.locator('[data-face-library]').click();await page.locator('[data-face-diff]').click();assert((await page.locator('#face-comparison').textContent()).includes('瞳のHEX：瞳の基本色 未設定 → #748DA8'));
-  await page.locator('[data-face-apply]').click();assert.equal(await page.locator('[data-hex-input="irisColor"]').inputValue(),'#748DA8','Face apply restores eye HEX');assert.equal(await page.locator('[data-hex-input="hairColor"]').inputValue(),'#C8CCD6');
+  await page.locator('[data-face-apply]').click();assert.equal(await page.locator('[data-hex-input="irisColor"]').inputValue(),'#748DA8','Face apply restores eye HEX');assert.equal(await page.locator('[data-hex-input="hairColor"]').inputValue(),'#C8CCD6');await page.locator('#tab-design').click();assert(await page.locator('[data-hex-input="irisColor"]').isVisible(),'Applied face is visible on the design tab');
 
   // 再読込：UI設定とHEXの両方を復元。OFFにしてもHEXは消えない。
   await saved();await page.reload();await saved();assert(await page.locator('#advanced-toggle').isChecked());assert(await page.locator('#advanced-markdown').isChecked());assert(await page.locator('#advanced-hex').isChecked());assert((await text('advanced')).includes('blue-gray eyes (#748DA8)'));
