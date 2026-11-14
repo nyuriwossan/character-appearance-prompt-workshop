@@ -89,9 +89,22 @@
     $('hex-reference').hidden=!ref;$('hex-reference').dataset.hex=ref||'';$('hex-reference-swatch').style.background=ref||'transparent';
     $('hex-unset').hidden=!cur;
     loadHex(cur||ref||'#808080');
-    $('hex-dialog').showModal();document.body.classList.add('modal-open');
+    var dlg=$('hex-dialog');dlg.classList.remove('vv-fit');dlg.style.top='';$('hex-dialog-body').scrollTop=0;dlg.showModal();document.body.classList.add('modal-open');watchViewport(true);fitPicker();
   }
   function closePicker(){if($('hex-dialog').open)$('hex-dialog').close();}
+  // iPhone Safari では vh／dvh がツールバーやキーボードを差し引いた「見えている範囲」と一致しないことがある。
+  // 開いている間は visualViewport（実際に見えている範囲）に合わせて、ダイアログの高さと位置を決める。
+  // 中身（.hex-dialog-body）だけがスクロールし、ヘッダーと下部ボタンは常にこの範囲内に残る。
+  var PAD=10,fitting=false;
+  function fitPicker(){
+    var dlg=$('hex-dialog');if(!dlg.open)return;var vv=root.visualViewport,h=vv?vv.height:root.innerHeight,top=vv?vv.offsetTop:0;
+    dlg.style.setProperty('--hex-vv-h',Math.max(0,Math.floor(h-PAD*2))+'px');dlg.classList.add('vv-fit');
+    dlg.style.top=Math.round(top+Math.max(PAD,(h-dlg.offsetHeight)/2))+'px';
+    // キーボード表示中は、入力中の欄がスクロール領域内で見えるようにする（ページ全体は動かさない）。
+    var el=document.activeElement,body=$('hex-dialog-body');if(el&&body.contains(el)&&/^(INPUT|TEXTAREA)$/.test(el.tagName)&&el.type!=='range'){var r=el.getBoundingClientRect(),b=body.getBoundingClientRect();if(r.bottom>b.bottom-4)body.scrollTop+=r.bottom-b.bottom+12;else if(r.top<b.top+4)body.scrollTop-=b.top-r.top+12;}
+  }
+  function scheduleFit(){if(fitting)return;fitting=true;root.requestAnimationFrame(function(){fitting=false;fitPicker();});}
+  function watchViewport(on){var vv=root.visualViewport,m=on?'addEventListener':'removeEventListener';if(vv){vv[m]('resize',scheduleFit);vv[m]('scroll',scheduleFit);}root[m]('resize',scheduleFit);root[m]('orientationchange',scheduleFit);}
   function refocus(id){var el=document.querySelector('.hex-control [data-hex-open="'+id+'"]')||document.querySelector('[data-hex-open="'+id+'"]');if(el&&el.offsetParent)el.focus({preventScroll:true});}
   function initArea(){
     var area=$('hex-sv');
@@ -138,7 +151,12 @@
       if(b.dataset.advFormat){ui.format=b.dataset.advFormat;save();renderOutputs();focusSeg('data-adv-format',ui.format);return;}
       if(b.dataset.advScope){ui.scope=b.dataset.advScope;save();renderOutputs();focusSeg('data-adv-scope',ui.scope);return;}
     });
-    $('hex-dialog').addEventListener('close',function(){document.body.classList.remove('modal-open');pick.dragging=false;});
+    $('hex-dialog').addEventListener('close',function(){document.body.classList.remove('modal-open');pick.dragging=false;watchViewport(false);});
+    // HEX入力欄のフォーカスで iOS のキーボードが出る。見えている範囲の変化（resize）に加え、念のためフォーカス時にも合わせ直す。
+    $('hex-dialog-input').addEventListener('focus',function(){scheduleFit();root.setTimeout(scheduleFit,350);});
+    $('hex-dialog-input').addEventListener('blur',function(){root.setTimeout(scheduleFit,350);});
+    // 「色名の色見本」ボタンや「HEXを解除」の有無で高さが変わるため、開いた後の内容変化でも位置を合わせ直す。
+    if(root.ResizeObserver)new ResizeObserver(scheduleFit).observe($('hex-dialog-body'));
     renderPanel();
   }
   function focusSeg(attr,id){var el=document.querySelector('['+attr+'="'+id+'"]');if(el)el.focus({preventScroll:true});}
