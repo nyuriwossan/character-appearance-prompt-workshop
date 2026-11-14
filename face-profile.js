@@ -40,20 +40,20 @@
   function defaults(s,keys){keys.forEach(function(k){var f=k.split(':')[0];if(VARIABLE.indexOf(f)>=0)s=setLayer(s,k,'variable');});return s;}
   function snapshot(raw){var s=CAW.normalizer.normalize(raw),p=clone(s.faceProfile);p.appearance={};
     D.fields.forEach(function(f){if(!isFace(f.id))return;var v=s.appearance[f.id],positions=AUX[f.id]&&list(s.appearance[AUX[f.id]]);if(positions&&positions.length&&!positions.some(function(id){return isFace(AUX[f.id],id);}))v=f.selectionMode==='multi'?[]:null;p.appearance[f.id]=Array.isArray(v)?v.filter(function(id){return isFace(f.id,id);}):v;});
-    p.customTags={face:s.customTags.face.slice(),eyes:s.customTags.eyes.slice()};return p;
+    p.customTags={face:s.customTags.face.slice(),eyes:s.customTags.eyes.slice()};p.hexColors=CAW.hex.faceMap(s.hexColors);return p;
   }
   function clear(raw){var s=CAW.normalizer.normalize(raw);
     D.fields.forEach(function(f){if(!isFace(f.id))return;if(AUX[f.id]&&list(s.appearance[AUX[f.id]]).some(function(id){return !isFace(AUX[f.id],id);}))return;
       s.appearance[f.id]=f.selectionMode==='multi'?s.appearance[f.id].filter(function(id){return !isFace(f.id,id);}):null;
-    });s.customTags.face=[];s.customTags.eyes=[];s.faceProfile=normalizeProfile(null);s.updatedAt=new Date().toISOString();return CAW.normalizer.normalize(s);
+    });s.customTags.face=[];s.customTags.eyes=[];Object.keys(s.hexColors).forEach(function(id){if(CAW.hex.isFace(id))delete s.hexColors[id];});s.faceProfile=normalizeProfile(null);s.updatedAt=new Date().toISOString();return CAW.normalizer.normalize(s);
   }
   function apply(raw,profile){var s=clear(raw),p=validate(profile);
     D.fields.forEach(function(f){if(!isFace(f.id))return;if(AUX[f.id]&&list(s.appearance[AUX[f.id]]).some(function(id){return !isFace(AUX[f.id],id);}))return;
       var v=p.appearance[f.id];s.appearance[f.id]=f.selectionMode==='multi'?s.appearance[f.id].concat(list(v)):v;
-    });s.customTags.face=p.customTags.face.slice();s.customTags.eyes=p.customTags.eyes.slice();s.faceProfile=p;s=CAW.normalizer.normalize(s);[s.appearance.irisColor].concat(s.appearance.irisPattern).filter(Boolean).forEach(function(id){CAW.colors.autoOpen(s,id===s.appearance.irisColor?'irisColor':'irisPattern',id);});return s;
+    });s.customTags.face=p.customTags.face.slice();s.customTags.eyes=p.customTags.eyes.slice();Object.keys(p.hexColors).forEach(function(id){s.hexColors[id]=p.hexColors[id];});s.faceProfile=p;s=CAW.normalizer.normalize(s);[s.appearance.irisColor].concat(s.appearance.irisPattern).filter(Boolean).forEach(function(id){CAW.colors.autoOpen(s,id===s.appearance.irisColor?'irisColor':'irisPattern',id);});return s;
   }
   function validate(raw){if(!raw||typeof raw!=='object'||!raw.appearance)throw new Error('顔プロファイルの形式を確認してください。');
-    var normalized=CAW.normalizer.normalize({appearance:raw.appearance,customTags:raw.customTags,faceProfile:raw});return snapshot(normalized);
+    var normalized=CAW.normalizer.normalize({appearance:raw.appearance,customTags:raw.customTags,faceProfile:raw,hexColors:raw.hexColors});return snapshot(normalized);
   }
   function library(){try{var p=JSON.parse(root.localStorage.getItem(LIB)||'[]');return list(p).map(validate).sort(function(a,b){return b.updatedAt.localeCompare(a.updatedAt);});}catch(e){return [];}}
   function save(raw,asNew){var p=snapshot(raw),items=library(),i=items.findIndex(function(x){return x.id===p.id;}),now=new Date().toISOString();
@@ -95,8 +95,9 @@
   }
   function negative(s){return CAW.generator.dedupe([block(s,'excluded'),'text','watermark','multiple people','obscured face','blurry face']).join(', ');}
   function pixai(s){return CAW.generator.dedupe([s.faceProfile.triggerWord,block(s,'fixed'),block(s,'variable'),'solo','clear face','clean background']).join(', ');}
-  function diff(a,b){var sa=CAW.normalizer.normalize({appearance:a.appearance,customTags:a.customTags,faceProfile:a}),sb=CAW.normalizer.normalize({appearance:b.appearance,customTags:b.customTags,faceProfile:b}),aa=entries(sa),bb=entries(sb);
-    return {removed:aa.filter(function(x){return !bb.some(function(y){return y.key===x.key;});}),added:bb.filter(function(x){return !aa.some(function(y){return y.key===x.key;});}),changed:aa.filter(function(x){return bb.some(function(y){return y.key===x.key;})&&layer(sa,x.key)!==layer(sb,x.key);}),promptA:block(sa,'fixed'),promptB:block(sb,'fixed')};
+  function diff(a,b){var sa=CAW.normalizer.normalize({appearance:a.appearance,customTags:a.customTags,faceProfile:a}),sb=CAW.normalizer.normalize({appearance:b.appearance,customTags:b.customTags,faceProfile:b}),aa=entries(sa),bb=entries(sb),ha=CAW.hex.faceMap(a.hexColors),hb=CAW.hex.faceMap(b.hexColors);
+    var hexChanges=CAW.hex.fields.filter(function(id){return (ha[id]||null)!==(hb[id]||null);}).map(function(id){return {field:id,label:D.byField(id).labelJa,from:ha[id]||null,to:hb[id]||null};});
+    return {removed:aa.filter(function(x){return !bb.some(function(y){return y.key===x.key;});}),added:bb.filter(function(x){return !aa.some(function(y){return y.key===x.key;});}),changed:aa.filter(function(x){return bb.some(function(y){return y.key===x.key;})&&layer(sa,x.key)!==layer(sb,x.key);}),promptA:block(sa,'fixed'),promptB:block(sb,'fixed'),hexChanges:hexChanges};
   }
   var PRESETS=[
     {id:'fixed',label:'顔固定の基本',patch:{faceShape:'oval',jawShape:'narrow',eyeShape:['narrow','almond'],noseTip:'small',lipRatio:'lower_thicker',browShape:'straight'}},

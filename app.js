@@ -39,7 +39,7 @@
     dialog.showModal();document.body.classList.add('modal-open');
   }
   function fieldHtml(f){
-    return '<div class="field"><div class="field-title"><h3>'+escapeHtml(f.labelJa)+'</h3><span class="field-meta">'+(f.selectionMode==='multi'?'複数選択':'1つ選択')+'・未設定可</span></div><div class="chip-grid">'+f.options.map(function(o){return '<button class="choice-chip" data-field="'+f.id+'" data-option="'+o.id+'" aria-pressed="'+isSelected(f,o.id)+'">'+(o.colorValue?'<span class="swatch" style="background:'+o.colorValue+'"></span>':'')+escapeHtml(o.labelJa)+'</button>';}).join('')+'</div></div>';
+    return '<div class="field"><div class="field-title"><h3>'+escapeHtml(f.labelJa)+'</h3><span class="field-meta">'+(f.selectionMode==='multi'?'複数選択':'1つ選択')+'・未設定可</span></div><div class="chip-grid">'+f.options.map(function(o){return '<button class="choice-chip" data-field="'+f.id+'" data-option="'+o.id+'" aria-pressed="'+isSelected(f,o.id)+'">'+(o.colorValue?'<span class="swatch" style="background:'+o.colorValue+'"></span>':'')+escapeHtml(o.labelJa)+'</button>';}).join('')+'</div>'+CAW.advancedUi.widget(f.id,state)+'</div>';
   }
   function customHtml(cat){
     var keys=customMap[cat]||[];return keys.map(function(k){return '<div class="custom-box"><label for="custom-'+k+'">英語の追加タグ（'+customLabels[k]+'）</label><p>カンマ区切り。選択タグと同じ語は出力時に整理します。</p><input id="custom-'+k+'" data-custom="'+k+'" value="'+escapeHtml(state.customTags[k].join(', '))+'" placeholder="例: subtle freckles, narrow pupils"></div>';}).join('');
@@ -48,9 +48,9 @@
     var fields=D.fields.filter(function(f){return f.category===cat&&f.colorDetail;}),opened=(state.preferences.colorDetails||[]).indexOf(cat)>=0;
     if(!fields.length)return '';
     var modes=state.appearance.hairMulticolor||[],special=modes.filter(function(x){return x!=='none';}),single=modes.indexOf('none')>=0;
-    var shown=fields.filter(function(f){return cat==='eyes'||!special.length||!f.detailModes.length||f.detailModes.some(function(m){return special.indexOf(m)>=0;})||state.appearance[f.id];});
+    var shown=fields.filter(function(f){return cat==='eyes'||!special.length||!f.detailModes.length||f.detailModes.some(function(m){return special.indexOf(m)>=0;})||state.appearance[f.id]||CAW.advancedUi.hexOn()&&CAW.hex.get(state,f.id);});
     var count=fields.filter(function(f){return state.appearance[f.id];}).length;
-    return '<details class="color-details" data-color-details="'+cat+'" '+(opened?'open':'')+'><summary>'+(cat==='eyes'?'瞳色の詳細（左右・虹彩の配色）':'髪色の詳細（部分別の配色）')+(count?' ・ '+count+'項目設定中':'')+'</summary><p class="color-detail-note">'+(cat==='eyes'?'左右は顔IDで選んだ「本人／画面」の基準です。左右の色を指定した場合は、瞳の基本色より優先して出力します。':'髪の左右は本人基準です。部分の色を指定した場合は、その場所の色として出力します。'+(single?' 「単色」が選択中のため詳細色は出力しません。複数色の入れ方から「単色」を解除してください。':''))+'</p><div class="color-detail-grid">'+shown.map(function(f){var o=D.byOption(f.id,state.appearance[f.id]);return '<label class="color-detail-control" for="detail-'+f.id+'"><span>'+escapeHtml(f.labelJa)+'</span><div><span class="swatch" style="background:'+(o?o.colorValue:'#f4f2ed')+'" aria-hidden="true"></span><select id="detail-'+f.id+'" data-detail-field="'+f.id+'"><option value="">未設定</option>'+f.options.map(function(c){return '<option value="'+c.id+'" '+(c.id===state.appearance[f.id]?'selected':'')+'>'+escapeHtml(c.labelJa)+'</option>';}).join('')+'</select></div></label>';}).join('')+'</div></details>';
+    return '<details class="color-details" data-color-details="'+cat+'" '+(opened?'open':'')+'><summary>'+(cat==='eyes'?'瞳色の詳細（左右・虹彩の配色）':'髪色の詳細（部分別の配色）')+(count?' ・ '+count+'項目設定中':'')+'</summary><p class="color-detail-note">'+(cat==='eyes'?'左右は顔IDで選んだ「本人／画面」の基準です。左右の色を指定した場合は、瞳の基本色より優先して出力します。':'髪の左右は本人基準です。部分の色を指定した場合は、その場所の色として出力します。'+(single?' 「単色」が選択中のため詳細色は出力しません。複数色の入れ方から「単色」を解除してください。':''))+'</p><div class="color-detail-grid">'+shown.map(function(f){var o=D.byOption(f.id,state.appearance[f.id]),hexWidget=CAW.advancedUi.widget(f.id,state);return (hexWidget?'<div class="color-detail-cell">':'')+'<label class="color-detail-control" for="detail-'+f.id+'"><span>'+escapeHtml(f.labelJa)+'</span><div><span class="swatch" style="background:'+(o?o.colorValue:'#f4f2ed')+'" aria-hidden="true"></span><select id="detail-'+f.id+'" data-detail-field="'+f.id+'"><option value="">未設定</option>'+f.options.map(function(c){return '<option value="'+c.id+'" '+(c.id===state.appearance[f.id]?'selected':'')+'>'+escapeHtml(c.labelJa)+'</option>';}).join('')+'</select></div></label>'+(hexWidget?hexWidget+'</div>':'');}).join('')+'</div></details>';
   }
   function categoryFieldsHtml(cat){return D.fields.filter(function(f){return f.category===cat&&!f.colorDetail;}).map(fieldHtml).join('')+colorDetailsHtml(cat)+customHtml(cat);}
   function renderAccordions(){
@@ -72,15 +72,16 @@
   var outputDefs=[['short','短縮プロンプト',function(){return CAW.generator.short(state);},'wide'],['detailed','詳細プロンプト',function(){return CAW.generator.detailed(state);},'wide'],['bodyPrompt','素体プロンプト',function(){return CAW.generator.bodyPrompt(state);},'wide'],['summary','日本語の外見まとめ',function(){return CAW.generator.summaryJa(state);},''],['basic','基本の外見一覧',function(){return CAW.generator.basicJa(state);},''],['arrange','アレンジ項目一覧',function(){return CAW.generator.arrangeJa(state);},''],['faceVerify','顔確認用プロンプト',function(){return CAW.generator.faceVerify(state);},''],['bodyVerify','身体確認用プロンプト',function(){return CAW.generator.bodyVerify(state);},'wide']];
   function renderOutputs(){
     $('#outputs').innerHTML=outputDefs.map(function(d){var text=d[2]();return '<article class="output-card '+d[3]+'"><div class="output-head"><h3>'+d[1]+'</h3><button class="copy-button" data-copy="'+d[0]+'">コピー</button></div><pre class="output-text '+(text?'':'empty')+'" id="output-'+d[0]+'">'+escapeHtml(text||'まだ出力できる項目が選ばれていません。')+'</pre></article>';}).join('');
+    CAW.advancedUi.renderOutputs();
   }
   function renderLibrary(){
     var items=CAW.storage.list();$('#library-list').innerHTML=items.length?items.map(function(x){return '<article class="library-card"><h3>'+escapeHtml(x.name)+'</h3><p class="library-meta">'+CAW.generator.selected(x).length+'項目 ・ 更新 '+new Date(x.updatedAt).toLocaleString('ja-JP')+'</p><div class="library-actions"><button class="button primary" data-load="'+x.id+'">読み込む</button><button class="button" data-duplicate="'+x.id+'">複製</button><button class="button danger" data-delete="'+x.id+'">削除</button></div></article>';}).join(''):'<p class="all-clear">名前を付けて保存した設計はまだありません。</p>';
   }
-  function renderAll(){state=CAW.normalizer.normalize(state);renderAccordions();renderSelection();renderDiagnostics();renderOutputs();CAW.faceUi.render();$('#design-name').value=state.name;scheduleSave();}
+  function renderAll(){state=CAW.normalizer.normalize(state);renderAccordions();renderSelection();renderDiagnostics();renderOutputs();CAW.faceUi.render();CAW.advancedUi.render();$('#design-name').value=state.name;scheduleSave();}
   function refreshSelectResults(){
     // Keep native selects attached until their picker finishes committing.
     state=CAW.normalizer.normalize(state);
-    $$('[data-detail-field]').forEach(function(el){var id=el.dataset.detailField,o=D.byOption(id,state.appearance[id]),v=state.appearance[id]||'';if(el.value!==v)el.value=v;$('.swatch',el.parentElement).style.background=o?o.colorValue:'#f4f2ed';});
+    $$('[data-detail-field]').forEach(function(el){var id=el.dataset.detailField,o=D.byOption(id,state.appearance[id]),v=state.appearance[id]||'';if(el.value!==v)el.value=v;$('.swatch',el.parentElement).style.background=o?o.colorValue:'#f4f2ed';});CAW.advancedUi.refreshWidgets();
     $$('[data-color-details]').forEach(function(el){var cat=el.dataset.colorDetails,count=D.fields.filter(function(f){return f.category===cat&&f.colorDetail&&state.appearance[f.id];}).length;$('summary',el).textContent=(cat==='eyes'?'瞳色の詳細（左右・虹彩の配色）':'髪色の詳細（部分別の配色）')+(count?' ・ '+count+'項目設定中':'');});
     D.categories.forEach(function(cat){var head=$('[data-category="'+cat.id+'"]'),items=categoryItems(cat.id);if(head)$('.accordion-summary',head).textContent=items.length?items.slice(0,5).map(function(x){return x.option.labelJa;}).join('／'):'未設定';});
     renderSelection();renderDiagnostics();renderOutputs();CAW.faceUi.render({preserveControls:true});scheduleSave();
@@ -127,5 +128,5 @@
   function updateBackToTop(){var button=$('#back-to-top');button.hidden=root.scrollY<500;}
   root.addEventListener('scroll',updateBackToTop,{passive:true});
   CAW.faceUi.init({get:function(){return state;},set:function(s){state=s;renderAll();},update:function(s){state=s;refreshSelectResults();},save:scheduleSave,toast:toast,download:download,preset:openPresetReview});
-  state=CAW.storage.loadDraft();renderPresets();renderAll();updateBackToTop();
+  state=CAW.storage.loadDraft();CAW.advancedUi.init({get:function(){return state;},set:function(s){state=s;renderAll();},update:function(s){state=s;refreshSelectResults();},toast:toast});renderPresets();renderAll();updateBackToTop();
 })(window);
