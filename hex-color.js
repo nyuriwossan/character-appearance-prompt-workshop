@@ -54,7 +54,8 @@
   function eyePresent(s,id){return CAW.colors.selected(s,id)||hexOnly(s,id);}
   function hairPresent(s,id){return !!s.appearance[id]||hexOnly(s,id);}
   function suffix(s,id){var hex=get(s,id);return hex?' ('+hex+')':'';}
-  function basis(s,text){return /\b(left|right)\b/.test(text)?text+' ('+(s.faceProfile.leftRightBasis==='screen'?'image-space':'character\'s own')+' left/right)':text;}
+  // 左右の基準の注記とHEXが両方付く場合は、括弧を2つ並べず1つにまとめる：blue left eye (#3366CC, character's own left/right)
+  function basis(s,text,field){var hex=get(s,field),note=/\b(left|right)\b/.test(text)?(s.faceProfile.leftRightBasis==='screen'?'image-space':'character\'s own')+' left/right':'',parts=[hex,note].filter(Boolean);return text+(parts.length?' ('+parts.join(', ')+')':'');}
   // HEX有効時の1フィールド分のタグ。color-details.js の優先順位（左右の瞳、虹彩の内外、単色、グラデーション、左右の髪）を
   // 「HEXだけ設定された部位も指定済みとみなす」形でそのまま踏襲する。出力しない条件では空文字を返し、HEXも漏らさない。
   function tag(raw,field){
@@ -67,7 +68,7 @@
       if(left&&right)return '';
       if(left||right){side=left?'right':'left';text=o?o.promptEn.replace(/ eyes$/,'')+' '+side+' eye':side+' eye color';}
       else text=o?o.promptEn:NEUTRAL.irisColor;
-      return basis(s,text+suffix(s,field));
+      return basis(s,text,field);
     }
     if(HAIR_DETAIL.test(field)){if(multi.indexOf('none')>=0)return '';return (o?o.promptEn:NEUTRAL[field])+suffix(s,field);}
     if(field==='hairColor'){
@@ -78,8 +79,8 @@
       }
       return (o?o.promptEn:NEUTRAL.hairColor)+suffix(s,field);
     }
-    text=(o?o.promptEn:NEUTRAL[field])+suffix(s,field);
-    return field==='irisLeftColor'||field==='irisRightColor'?basis(s,text):text;
+    text=o?o.promptEn:NEUTRAL[field];
+    return field==='irisLeftColor'||field==='irisRightColor'?basis(s,text,field):text+suffix(s,field);
   }
   // 設定済みHEXの一覧。active は「今の選択・配色方式でHEX付き出力に実際に載るか」。
   function status(raw){var s=CAW.normalizer.normalize(raw);return FIELDS.filter(function(id){return !!get(s,id);}).map(function(id){var f=D.byField(id),t=tag(s,id);return {field:id,labelJa:f.labelJa,hex:get(s,id),active:!!t&&t.indexOf(get(s,id))>=0,hexOnly:hexOnly(s,id),mismatch:mismatch(s,id)};});}

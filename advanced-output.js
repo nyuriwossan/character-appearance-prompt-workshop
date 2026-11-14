@@ -39,7 +39,7 @@
     return m==='short'?list.slice(0,18):list;
   }
   // 自由入力タグが「HEXを併記した選択タグ」と同じ語の場合も、従来どおり重複として整理する。
-  function bare(text){return key(String(text).replace(/ \(#[0-9A-F]{6}\)/g,''));}
+  function bare(text){return key(String(text).replace(/ \(#[0-9A-F]{6}\)/g,'').replace(/\(#[0-9A-F]{6}, /g,'('));}
   function customs(s,scope,list){var taken={};(list||[]).forEach(function(x){taken[bare(x.text)]=1;});return mode(scope)==='short'?[]:G.customTags(s).map(G.safePrompt).filter(function(t){return !taken[key(t)];});}
   function options(o){return {scope:o&&o.scope||'detailed',hex:!!(o&&o.hex)};}
   // B：英語タグ＋HEX。hex:false の場合は従来の短縮・詳細・素体プロンプトと同じ文字列になる。
