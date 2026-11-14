@@ -7,7 +7,21 @@
   function $(s,p){return(p||document).querySelector(s);}function $$(s,p){return Array.from((p||document).querySelectorAll(s));}
   function escapeHtml(v){return String(v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function toast(msg){var el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){el.classList.remove('show');},2200);}
-  function scheduleSave(){var el=$('#save-status');el.textContent='保存中…';clearTimeout(scheduleSave.t);scheduleSave.t=setTimeout(function(){try{CAW.storage.saveDraft(state);el.textContent='自動保存済み';}catch(e){el.textContent='保存できません';toast('保存できません。JSONを書き出して保管してください。');}},180);}
+  // 自動保存：通常は180ms後にまとめて保存し、ページが隠れる・閉じる・再読込される時は未保存分をその場で保存する。
+  var savePending=false;
+  function writeDraft(){var el=$('#save-status');clearTimeout(scheduleSave.t);try{CAW.storage.saveDraft(state);savePending=false;el.textContent='自動保存済み';return true;}catch(e){el.textContent='保存できません';toast('保存できません。JSONを書き出して保管してください。');return false;}}
+  function scheduleSave(){$('#save-status').textContent='保存中…';savePending=true;clearTimeout(scheduleSave.t);scheduleSave.t=setTimeout(writeDraft,180);}
+  // 設計名と自由入力タグは確定（change）時に反映される。iPhone Safariでは入力中にアプリを切り替えても change が来ないことがあるため、
+  // フォーカス中の未確定の値を、画面を描き直さずに state へ取り込む（入力中のカーソルやキーボードはそのまま）。
+  function captureFocusedInput(){
+    var el=document.activeElement;if(!el)return;
+    if(el.id==='design-name'){var name=el.value.trim()||'名称未設定';if(name!==state.name){state.name=name;savePending=true;}return;}
+    if(el.dataset&&el.dataset.custom&&state.customTags[el.dataset.custom]){var group=el.dataset.custom,tags=parseCustom(el.value);if(JSON.stringify(tags)!==JSON.stringify(state.customTags[group])){state.customTags[group]=tags;state.updatedAt=new Date().toISOString();savePending=true;}}
+  }
+  // 変更がなければ何も書き込まない（タブ切り替えやアプリ切り替えだけでは保存しない）。
+  function flushSave(){captureFocusedInput();if(savePending)writeDraft();}
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')flushSave();});
+  root.addEventListener('pagehide',flushSave);
   function isSelected(f,id){var v=state.appearance[f.id];return Array.isArray(v)?v.indexOf(id)>=0:v===id;}
   function categoryItems(cat){return CAW.generator.selected(state).filter(function(x){return x.field.category===cat;});}
   function renderPresets(){
