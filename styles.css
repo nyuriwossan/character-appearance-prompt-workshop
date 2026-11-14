@@ -145,3 +145,17 @@ select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px so
 @media(max-width:700px){:root{--tabs-h:58px}.view-tabs{margin:-6px -4px 18px;padding:6px 4px}.view-tab-label{font-size:14px}}
 @media(max-width:340px){.view-tab small{display:none}}
 .view-panel :is(section,h2,.accordion,details,[id]){scroll-margin-top:calc(var(--tabs-h) + 14px)}
+
+/* HEX dialog: 3 layers (header / scrollable settings / always-visible actions).
+   Height follows the visible viewport: 100dvh where supported, and the visualViewport via --hex-vv-h while open. */
+.modal.hex-dialog{overflow:hidden;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px)}
+.modal.hex-dialog.vv-fit{max-height:var(--hex-vv-h);inset:auto 0 auto 0;margin:0 auto}
+.modal.hex-dialog[open]{display:flex;flex-direction:column}
+.hex-dialog .hex-dialog-head{position:static;flex:0 0 auto}
+.hex-dialog .hex-dialog-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:14px}
+.hex-dialog .hex-dialog-actions{position:static;flex:0 0 auto;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;margin:0;padding:10px 16px max(10px,env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);box-shadow:0 -6px 14px rgba(45,52,66,.06)}
+.hex-dialog .hex-dialog-actions .button{min-width:0;min-height:44px;padding:8px 6px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hex-dialog .hex-dialog-actions [hidden]{display:none}
+.hex-dialog .hex-sv{height:clamp(96px,24dvh,170px);min-height:96px}
+@media(max-height:560px){.hex-dialog .hex-dialog-head{padding:8px 14px 7px}.hex-dialog .hex-dialog-head .eyebrow{display:none}.hex-dialog .hex-dialog-head h2{font-size:16px}.hex-dialog .hex-dialog-body{gap:6px;padding-top:10px}.hex-dialog .hex-preview-swatch{width:40px;height:40px}.hex-dialog .hex-preview strong{font-size:16px}.hex-dialog .hex-dialog-actions{padding-top:8px}}
+@media(max-width:360px){.hex-dialog .hex-dialog-actions{padding-inline:10px;gap:6px}.hex-dialog .hex-dialog-actions .button{font-size:12px;padding-inline:4px}}

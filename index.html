@@ -157,8 +157,8 @@
   </dialog>
   <dialog id="face-library-dialog" class="modal" aria-labelledby="face-library-title"><div class="modal-head"><div><p class="eyebrow">FACE LIBRARY</p><h2 id="face-library-title">顔プロファイル一覧</h2></div><button class="icon-button" data-face-close aria-label="閉じる">×</button></div><p class="modal-note">保存した顔を適用すると顔設定を差し替えます。髪・肌・体格、首や鎖骨のほくろ・傷は残します。身体と共通のほくろ・傷の大きさ等は身体側の設定を優先します。</p><div id="face-library-list" class="library-list"></div><div id="face-comparison" class="face-comparison"></div></dialog>
   <dialog id="hex-dialog" class="modal hex-dialog" aria-labelledby="hex-dialog-title">
-    <div class="modal-head"><div><p class="eyebrow">HEX COLOR</p><h2 id="hex-dialog-title">HEXカラー</h2></div><button class="icon-button" data-hex-cancel aria-label="閉じる">×</button></div>
-    <div class="hex-dialog-body">
+    <div class="modal-head hex-dialog-head"><div><p class="eyebrow">HEX COLOR</p><h2 id="hex-dialog-title">HEXカラー</h2></div><button class="icon-button" data-hex-cancel aria-label="閉じる">×</button></div>
+    <div class="hex-dialog-body" id="hex-dialog-body">
       <div class="hex-preview"><span id="hex-preview-swatch" class="hex-preview-swatch" aria-hidden="true"></span><div><strong id="hex-preview-code" aria-live="polite"></strong><small id="hex-preview-name"></small></div></div>
       <div class="hex-sv" id="hex-sv" tabindex="0" role="application" aria-label="彩度と明るさ。ドラッグ、または矢印キーで調整"><div class="hex-sv-thumb" id="hex-sv-thumb"></div></div>
       <label class="hex-slider"><span>色相<output id="hex-h-val" for="hex-h"></output></span><input id="hex-h" class="hex-range hue" type="range" min="0" max="359" step="1"></label>
@@ -171,8 +171,8 @@
       <p id="hex-dialog-message" class="hex-message" data-kind="error" role="alert" hidden></p>
       <button type="button" class="button hex-reference" id="hex-reference" hidden><span id="hex-reference-swatch" class="swatch" aria-hidden="true"></span>色名の色見本に合わせる</button>
       <p class="face-hint">「この色を設定」を押すと、このHEXが色名に併記されます。色名そのものは変わりません。</p>
-      <div class="hex-dialog-actions"><button type="button" class="button" data-hex-cancel>キャンセル</button><button type="button" class="button danger" id="hex-unset" hidden>HEXを解除</button><button type="button" class="button primary" id="hex-apply">この色を設定</button></div>
     </div>
+    <div class="hex-dialog-actions"><button type="button" class="button" data-hex-cancel>キャンセル</button><button type="button" class="button danger" id="hex-unset" hidden>HEXを解除</button><button type="button" class="button primary" id="hex-apply">この色を設定</button></div>
   </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <button id="back-to-top" class="back-to-top" data-back-to-top hidden aria-label="ページ上部へ戻る">↑ 上へ戻る</button>
