@@ -71,6 +71,25 @@
 
     <section class="section design-section" aria-labelledby="design-title">
       <div class="section-heading"><div><p class="eyebrow">DESIGN BENCH</p><h2 id="design-title">外見設計</h2></div><button class="button reset-button" data-reset>全項目リセット</button></div>
+      <div class="advanced-settings" id="advanced-settings">
+        <label class="switch-row" for="advanced-toggle"><input id="advanced-toggle" type="checkbox" role="switch" aria-describedby="advanced-desc"><span class="switch-track" aria-hidden="true"></span><span class="switch-text">高度な設定：<strong id="advanced-state">OFF</strong></span></label>
+        <p id="advanced-desc" class="advanced-desc">Markdown形式のプロンプト出力や、HEXコードを使った細かな配色指定ができます。</p>
+        <div id="advanced-options" class="advanced-options" hidden>
+          <label class="check-row"><input id="advanced-markdown" type="checkbox">Markdown形式の出力を有効にする</label>
+          <label class="check-row"><input id="advanced-hex" type="checkbox">HEXコードによる色指定を有効にする</label>
+          <p class="face-hint">どちらも実験的な補助機能です。効き方は画像生成モデルや生成条件によって異なり、精度が上がるとは限りません。従来の出力はそのまま使えます。</p>
+          <details class="face-details advanced-help"><summary>高度な設定の使い方</summary>
+            <ul class="advanced-help-list">
+              <li><strong>Markdown出力</strong>：選択した項目を「## Face」「## Hair」などの見出しで整理した英語Markdownを、出力欄の「高度な出力」に追加します。</li>
+              <li><strong>HEX指定</strong>：瞳・髪・肌の色の項目に「ピッカー」とHEX入力欄が出ます。ピッカーでは色相・彩度・明るさを調整でき、HEXを直接入力することもできます。</li>
+              <li><strong>色名との併記</strong>：HEXは色名を置き換えず、<code>silver hair (#C8CCD6)</code> のように色名のあとへ併記します。色名が未選択でHEXだけの場合は <code>hair color (#C8CCD6)</code> のように部位名で出力します。</li>
+              <li><strong>出力される条件</strong>：HEXを自分で設定した色だけが対象です。左右の瞳色・グラデーション・単色などの優先順位は従来どおりで、出力されない部位のHEXは設定だけ保持します。</li>
+              <li><strong>保存</strong>：HEXは外見データの一部として自動保存・名前付き保存・JSONに含まれ、瞳のHEXは顔IDにも保存されます。このスイッチのON/OFFはこの端末の表示設定で、OFFにしてもHEXは消えません。</li>
+            </ul>
+          </details>
+          <div id="hex-overview" class="hex-overview"></div>
+        </div>
+      </div>
       <div id="accordions" class="accordions"></div>
     </section>
 
@@ -82,6 +101,7 @@
     <section class="section output-section" aria-labelledby="output-title">
       <div class="section-heading"><div><p class="eyebrow">OUTPUT</p><h2 id="output-title">出力</h2></div><p>意味順に整理し、重複を除いた結果です。</p></div>
       <div id="outputs" class="output-grid"></div>
+      <div id="advanced-outputs" class="output-grid advanced-outputs" hidden></div>
       <div class="section-heading face-output-heading"><div><p class="eyebrow">IDENTITY & DATASET</p><h2>顔ID・LoRA用の出力</h2></div><p>ポジティブとネガティブを、それぞれの入力欄へコピーしてください。</p></div>
       <div id="face-outputs" class="output-grid"></div>
       <details class="face-details"><summary>顔確認・学習画像のバリエーション</summary><label class="face-view-label">確認目的<select id="face-view"><option value="front">正面確認</option><option value="threeQuarter">斜め45度確認</option><option value="profile">横顔確認</option><option value="expression">表情差分確認</option><option value="eyes">目元拡大確認</option><option value="marks">ほくろ・傷確認</option><option value="mirror">左右反転チェック</option><option value="turnaround">3面図／ターンアラウンド</option></select></label><div id="face-verification" class="output-grid"></div><p class="face-hint">表情差分は微笑みの例です。表情・照明は画像ごとに変更してください。学習用画像は1人で、顔の特徴が見える構図を使います。3面図は比較用として、学習画像には各ビューを切り出して使ってください。</p><div id="face-dataset" class="output-grid"></div></details>
@@ -124,6 +144,24 @@
     </div>
   </dialog>
   <dialog id="face-library-dialog" class="modal" aria-labelledby="face-library-title"><div class="modal-head"><div><p class="eyebrow">FACE LIBRARY</p><h2 id="face-library-title">顔プロファイル一覧</h2></div><button class="icon-button" data-face-close aria-label="閉じる">×</button></div><p class="modal-note">保存した顔を適用すると顔設定を差し替えます。髪・肌・体格、首や鎖骨のほくろ・傷は残します。身体と共通のほくろ・傷の大きさ等は身体側の設定を優先します。</p><div id="face-library-list" class="library-list"></div><div id="face-comparison" class="face-comparison"></div></dialog>
+  <dialog id="hex-dialog" class="modal hex-dialog" aria-labelledby="hex-dialog-title">
+    <div class="modal-head"><div><p class="eyebrow">HEX COLOR</p><h2 id="hex-dialog-title">HEXカラー</h2></div><button class="icon-button" data-hex-cancel aria-label="閉じる">×</button></div>
+    <div class="hex-dialog-body">
+      <div class="hex-preview"><span id="hex-preview-swatch" class="hex-preview-swatch" aria-hidden="true"></span><div><strong id="hex-preview-code" aria-live="polite"></strong><small id="hex-preview-name"></small></div></div>
+      <div class="hex-sv" id="hex-sv" tabindex="0" role="application" aria-label="彩度と明るさ。ドラッグ、または矢印キーで調整"><div class="hex-sv-thumb" id="hex-sv-thumb"></div></div>
+      <label class="hex-slider"><span>色相<output id="hex-h-val" for="hex-h"></output></span><input id="hex-h" class="hex-range hue" type="range" min="0" max="359" step="1"></label>
+      <label class="hex-slider"><span>彩度<output id="hex-s-val" for="hex-s"></output></span><input id="hex-s" class="hex-range" type="range" min="0" max="100" step="1"></label>
+      <label class="hex-slider"><span>明るさ<output id="hex-v-val" for="hex-v"></output></span><input id="hex-v" class="hex-range" type="range" min="0" max="100" step="1"></label>
+      <div class="hex-dialog-row">
+        <label class="hex-field"><span>HEXコード</span><input id="hex-dialog-input" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="9" placeholder="#RRGGBB" aria-describedby="hex-dialog-message"></label>
+        <label class="hex-native"><input id="hex-native" type="color" aria-label="端末のカラーピッカーを開く"><span>端末のピッカー</span></label>
+      </div>
+      <p id="hex-dialog-message" class="hex-message" data-kind="error" role="alert" hidden></p>
+      <button type="button" class="button hex-reference" id="hex-reference" hidden><span id="hex-reference-swatch" class="swatch" aria-hidden="true"></span>色名の色見本に合わせる</button>
+      <p class="face-hint">「この色を設定」を押すと、このHEXが色名に併記されます。色名そのものは変わりません。</p>
+      <div class="hex-dialog-actions"><button type="button" class="button" data-hex-cancel>キャンセル</button><button type="button" class="button danger" id="hex-unset" hidden>HEXを解除</button><button type="button" class="button primary" id="hex-apply">この色を設定</button></div>
+    </div>
+  </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <button id="back-to-top" class="back-to-top" data-back-to-top hidden aria-label="ページ上部へ戻る">↑ 上へ戻る</button>
 
@@ -139,13 +177,16 @@
   <script src="data/rules.js"></script>
   <script src="state.js"></script>
   <script src="color-details.js"></script>
+  <script src="hex-color.js"></script>
   <script src="face-profile.js"></script>
   <script src="normalizer.js"></script>
   <script src="generator.js"></script>
+  <script src="advanced-output.js"></script>
   <script src="advisor.js"></script>
   <script src="storage.js"></script>
   <script src="preset-ui.js"></script>
   <script src="face-ui.js"></script>
+  <script src="advanced-ui.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

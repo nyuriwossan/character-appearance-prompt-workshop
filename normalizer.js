@@ -19,6 +19,8 @@
     base.preferences.colorDetails=arr(base.preferences.colorDetails).filter(function(id){return id==='eyes'||id==='hairColor';});
     if(!src.preferences||!Array.isArray(src.preferences.colorDetails)){['irisColor','irisPattern','hairMulticolor'].forEach(function(f){var v=Array.isArray(base.appearance[f])?base.appearance[f]:[base.appearance[f]];v.filter(Boolean).forEach(function(id){CAW.colors.autoOpen(base,f,id);});});}
     base.metadata=src.metadata&&typeof src.metadata==='object'?src.metadata:{};
+    // 0.3: 部位別HEX。旧JSON（0.1／0.2）には存在しないため、空として移行する。
+    base.hexColors=CAW.hex.normalizeMap(src.hexColors);
     base.faceProfile=CAW.face.sync(base,src.faceProfile);
     return base;
   }

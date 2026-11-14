@@ -6,7 +6,7 @@
   function initial(){
     var now=new Date().toISOString(), selections={};
     D.fields.forEach(function(f){selections[f.id]=f.selectionMode==='multi'?[]:null;});
-    return {type:'character-appearance-design',schemaVersion:'0.2',id:uuid(),name:'名称未設定',createdAt:now,updatedAt:now,appearance:selections,customTags:{face:[],eyes:[],hair:[],skin:[],body:[],marks:[],general:[]},preferences:{openCategories:['basic']},metadata:{},faceProfile:CAW.face.normalizeProfile(null)};
+    return {type:'character-appearance-design',schemaVersion:'0.3',id:uuid(),name:'名称未設定',createdAt:now,updatedAt:now,appearance:selections,customTags:{face:[],eyes:[],hair:[],skin:[],body:[],marks:[],general:[]},preferences:{openCategories:['basic']},metadata:{},hexColors:{},faceProfile:CAW.face.normalizeProfile(null)};
   }
   function set(raw,fieldId,optionId){
     var s=CAW.normalizer.normalize(raw), f=D.byField(fieldId); if(!f)return s;
