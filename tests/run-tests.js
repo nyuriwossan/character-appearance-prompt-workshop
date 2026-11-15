@@ -161,3 +161,4 @@ console.log(`PASS ${passed} assertions | ${options.length} options | ${CAW.data.
 require('./face-tests.js');
 require('./color-tests.js');
 require('./advanced-tests.js');
+require('./icon-tests.js');

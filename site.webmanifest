@@ -1,0 +1,17 @@
+{
+  "name": "キャラクター外見設計工房",
+  "short_name": "外見設計工房",
+  "description": "日本語でキャラクター本人の外見を組み立て、英語タグ型プロンプトへ変換する静的Webアプリ",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "browser",
+  "background_color": "#4a2f9a",
+  "theme_color": "#2d3442",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
