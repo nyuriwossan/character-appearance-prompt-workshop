@@ -165,3 +165,18 @@ select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px so
 .field-reference-link span{color:var(--accent);font-size:13px}
 .field-reference-link:hover{border-color:#cfcabf;background:#fff}
 .field-reference-link:focus-visible{outline:3px solid rgba(155,93,85,.4);outline-offset:2px}
+
+/* 部分プリセットの折りたたみ（見出し全体が開閉ボタン） */
+.preset-heading{margin-bottom:0}
+.preset-heading h2{margin:0;font-size:inherit}
+.preset-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:52px;margin:0;padding:6px 6px 6px 0;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.preset-toggle-title{font-family:Georgia,"Yu Mincho",serif;font-size:24px;font-weight:700;line-height:1.35}
+.preset-toggle-action{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--deep);font-size:13px;font-weight:800}
+.preset-chevron{display:inline-block;width:8px;height:8px;margin:-4px 2px 0 2px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .18s,margin .18s}
+.preset-toggle[aria-expanded=true] .preset-chevron{margin-top:4px;transform:rotate(-135deg)}
+.preset-toggle:hover .preset-toggle-action{border-color:#cfcabf}
+.preset-toggle:focus-visible{outline:3px solid rgba(155,93,85,.4);outline-offset:3px;border-radius:10px}
+.preset-body{padding-top:14px}
+.preset-lead{margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.75}
+@media(max-width:700px){.preset-toggle-title{font-size:22px}}
+@media(max-width:360px){.preset-toggle-title{font-size:20px}.preset-toggle-action{padding:0 11px}}
