@@ -52,8 +52,11 @@
     $('[data-confirm-preset]',dialog).disabled=impact.total===0;
     dialog.showModal();document.body.classList.add('modal-open');
   }
+  // 参考画像の一覧ページがある項目。見出しの下に補助リンクを出す（選択ボタンには触れない）。
+  var REFERENCE_PAGES={baseCut:{href:'hair-reference.html',label:'髪型の参考画像を見る'}};
+  function referenceLink(f){var r=REFERENCE_PAGES[f.id];return r?'<a class="field-reference-link" href="'+r.href+'" data-reference-link="'+f.id+'"><span aria-hidden="true">▦</span>'+escapeHtml(r.label)+'</a>':'';}
   function fieldHtml(f){
-    return '<div class="field"><div class="field-title"><h3>'+escapeHtml(f.labelJa)+'</h3><span class="field-meta">'+(f.selectionMode==='multi'?'複数選択':'1つ選択')+'・未設定可</span></div><div class="chip-grid">'+f.options.map(function(o){return '<button class="choice-chip" data-field="'+f.id+'" data-option="'+o.id+'" aria-pressed="'+isSelected(f,o.id)+'">'+(o.colorValue?'<span class="swatch" style="background:'+o.colorValue+'"></span>':'')+escapeHtml(o.labelJa)+'</button>';}).join('')+'</div>'+CAW.advancedUi.widget(f.id,state)+'</div>';
+    return '<div class="field"><div class="field-title"><h3>'+escapeHtml(f.labelJa)+'</h3><span class="field-meta">'+(f.selectionMode==='multi'?'複数選択':'1つ選択')+'・未設定可</span></div>'+referenceLink(f)+'<div class="chip-grid">'+f.options.map(function(o){return '<button class="choice-chip" data-field="'+f.id+'" data-option="'+o.id+'" aria-pressed="'+isSelected(f,o.id)+'">'+(o.colorValue?'<span class="swatch" style="background:'+o.colorValue+'"></span>':'')+escapeHtml(o.labelJa)+'</button>';}).join('')+'</div>'+CAW.advancedUi.widget(f.id,state)+'</div>';
   }
   function customHtml(cat){
     var keys=customMap[cat]||[];return keys.map(function(k){return '<div class="custom-box"><label for="custom-'+k+'">英語の追加タグ（'+customLabels[k]+'）</label><p>カンマ区切り。選択タグと同じ語は出力時に整理します。</p><input id="custom-'+k+'" data-custom="'+k+'" value="'+escapeHtml(state.customTags[k].join(', '))+'" placeholder="例: subtle freckles, narrow pupils"></div>';}).join('');
@@ -142,5 +145,18 @@
   function updateBackToTop(){var button=$('#back-to-top');button.hidden=root.scrollY<500;}
   root.addEventListener('scroll',updateBackToTop,{passive:true});
   CAW.faceUi.init({get:function(){return state;},set:function(s){state=s;renderAll();},update:function(s){state=s;refreshSelectResults();},save:scheduleSave,toast:toast,download:download,preset:openPresetReview});
-  state=CAW.storage.loadDraft();CAW.advancedUi.init({get:function(){return state;},set:function(s){state=s;renderAll();},update:function(s){state=s;refreshSelectResults();},toast:toast});renderPresets();renderAll();updateBackToTop();
+  // 参考一覧ページから戻った時の画面位置。Safari の戻るキャッシュが効けば画面はそのまま戻るので何もしない。
+  // ページが読み込み直された場合だけ、開いていたアコーディオンと「参考画像を見る」の位置を復元する（外見データには触れない）。
+  var RETURN_KEY='caw_reference_return_v1';
+  function rememberPosition(field){try{var a=document.querySelector('[data-reference-link="'+field+'"]');root.sessionStorage.setItem(RETURN_KEY,JSON.stringify({field:field,anchorTop:a?Math.round(a.getBoundingClientRect().top):null,scrollY:Math.round(root.scrollY),open:(state.preferences.openCategories||[]).slice(),at:Date.now()}));}catch(e){}}
+  function takePosition(){var x=null;try{x=JSON.parse(root.sessionStorage.getItem(RETURN_KEY)||'null');root.sessionStorage.removeItem(RETURN_KEY);}catch(e){}return x&&Date.now()-x.at<3600000?x:null;}
+  function restorePosition(x){
+    if(!x)return;var cur=(state.preferences.openCategories||[]).slice(),add=(Array.isArray(x.open)?x.open:[]).filter(function(id){return cur.indexOf(id)<0&&D.categories.some(function(c){return c.id===id;});});
+    if(add.length){state.preferences.openCategories=cur.concat(add);renderAccordions();}
+    function place(){var a=document.querySelector('[data-reference-link="'+x.field+'"]'),y=a&&typeof x.anchorTop==='number'?a.getBoundingClientRect().top+root.scrollY-x.anchorTop:x.scrollY,html=document.documentElement,prev=html.style.scrollBehavior;html.style.scrollBehavior='auto';root.scrollTo(0,Math.max(0,y));html.style.scrollBehavior=prev;updateBackToTop();}
+    place();root.requestAnimationFrame(place);if(document.readyState!=='complete')root.addEventListener('load',function(){root.requestAnimationFrame(place);},{once:true});
+  }
+  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-reference-link]');if(a)rememberPosition(a.dataset.referenceLink);});
+  root.addEventListener('pageshow',function(e){if(e.persisted)takePosition();});
+  state=CAW.storage.loadDraft();CAW.advancedUi.init({get:function(){return state;},set:function(s){state=s;renderAll();},update:function(s){state=s;refreshSelectResults();},toast:toast});renderPresets();renderAll();updateBackToTop();restorePosition(takePosition());
 })(window);

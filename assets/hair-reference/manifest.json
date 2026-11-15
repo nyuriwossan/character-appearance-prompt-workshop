@@ -1,0 +1,65 @@
+[
+  {
+    "fieldId": "baseCut",
+    "optionId": "crop",
+    "labelJa": "クロップ",
+    "descriptionJa": "短く整えた髪",
+    "image": "images/crop.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "pixie",
+    "labelJa": "ピクシーカット",
+    "descriptionJa": "短い毛束と軽い動き",
+    "image": "images/pixie.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "mushroom",
+    "labelJa": "マッシュ",
+    "descriptionJa": "丸いシルエット",
+    "image": "images/mushroom.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "layered_short",
+    "labelJa": "レイヤーショート",
+    "descriptionJa": "短髪に段差を入れた形",
+    "image": "images/layered_short.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "bob",
+    "labelJa": "ボブ",
+    "descriptionJa": "あご付近の長さ",
+    "image": "images/bob.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "lob",
+    "labelJa": "ロングボブ",
+    "descriptionJa": "肩に近い長めのボブ",
+    "image": "images/lob.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "wolf",
+    "labelJa": "ウルフカット",
+    "descriptionJa": "上は短め・襟足は長め",
+    "image": "images/wolf.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "shag",
+    "labelJa": "シャギーカット",
+    "descriptionJa": "毛先を軽く散らした形",
+    "image": "images/shag.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "straight",
+    "labelJa": "ストレートロング",
+    "descriptionJa": "まっすぐな長髪",
+    "image": "images/straight.webp"
+  }
+]

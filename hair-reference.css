@@ -1,0 +1,31 @@
+/* 髪型参考一覧ページ（hair-reference.html）専用 */
+.reference-bar{position:sticky;top:0;z-index:15;display:flex;padding:8px 14px;background:rgba(246,244,239,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.reference-back{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--deep);font-size:14px;font-weight:800;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.reference-back:focus-visible{outline:3px solid rgba(155,93,85,.4);outline-offset:2px}
+.reference-main{max-width:1080px;margin:0 auto;padding:22px 16px calc(40px + env(safe-area-inset-bottom))}
+.reference-intro h2{margin:2px 0 8px}
+.reference-intro p{margin:0 0 8px;color:var(--muted);font-size:13.5px;line-height:1.8}
+.reference-count{color:var(--ink)!important;font-weight:750}
+.reference-note{padding:9px 12px;border:1px dashed #cfcabf;border-radius:12px;background:#fdfcf8;font-size:12px!important}
+.reference-field{margin:22px 0 12px;font-size:17px}
+.reference-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0;padding:0;list-style:none}
+@media(min-width:600px){.reference-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}}
+@media(min-width:960px){.reference-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.reference-card{min-width:0}
+.reference-figure{margin:0;height:100%;border:1px solid var(--line);border-radius:16px;background:var(--surface);overflow:hidden}
+.reference-image{aspect-ratio:1/1;background:#fff;display:grid;place-items:center}
+.reference-image img{display:block;width:100%;height:100%;object-fit:contain}
+.reference-image.failed{background:#f1eee8}
+.reference-fallback{padding:12px;color:var(--muted);font-size:12px;text-align:center}
+.reference-caption{display:grid;gap:3px;padding:10px 12px 12px;border-top:1px solid var(--line)}
+.reference-name{font-size:15px;font-weight:800;line-height:1.4;overflow-wrap:anywhere}
+.reference-desc{color:var(--muted);font-size:12.5px;line-height:1.6;overflow-wrap:anywhere}
+.reference-pending{margin-top:18px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:0 14px}
+.reference-pending summary{min-height:48px;display:flex;align-items:center;font-size:13.5px;font-weight:750;cursor:pointer}
+.reference-pending-note{margin:0 0 8px;color:var(--muted);font-size:12px}
+.reference-pending-list{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+.reference-pending-list li{padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:#f6f4ef;color:var(--muted);font-size:12px}
+.reference-error{padding:12px 14px;border-radius:12px;background:#fff6f4;color:#a33d38;font-size:13px}
+.reference-bottom{margin-top:26px;text-align:center}
+@media(max-width:360px){.reference-main{padding-inline:12px}.reference-grid{gap:9px}.reference-caption{padding:8px 9px 10px}.reference-name{font-size:14px}}
+.reference-bar{padding-inline:max(14px,calc((100% - 1080px) / 2 + 16px))}

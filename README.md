@@ -28,6 +28,33 @@
 
 通常の外見出力は人物の特徴に限定します。顔確認・学習画像用の出力には角度、表情、照明、背景のテンプレートを追加します。部位診断の数字は設定数の目安で、生成品質の採点ではありません。
 
+## 髪型参考一覧
+
+「外見設計」タブの「髪型・カットの基本形」にある **髪型の参考画像を見る** から、髪型の参考イラストを一覧で見比べられます（`hair-reference.html`）。名前を確認したら「外見設計に戻る」またはブラウザの「戻る」で元の画面へ戻り、従来の選択ボタンから選びます。参考一覧を見るだけでは外見データは変わりません。
+
+- 現在は第1弾の9種類（クロップ／ピクシーカット／マッシュ／レイヤーショート／ボブ／ロングボブ／ウルフカット／シャギーカット／ストレートロング）を掲載しています。残りの38種類は「画像準備中の髪型」として名前だけを表示します。
+- 表示名と並び順は、外見設計の選択肢と同じ辞書（`data/*.js`）から取ります。
+- 戻った時は、外見データ・選んだ髪型・開いていたアコーディオン・画面の位置を保ちます。Safariが前の画面をそのまま戻せない場合は、自動保存したデータを読み込み、開いていたアコーディオンと位置だけを復元します。
+- 参考画像は髪型の違いを示す模式的なイラストで、画像生成AIで同じ髪型が再現されることを保証するものではありません。
+
+### 画像の追加方法
+
+```text
+assets/hair-reference/
+  manifest.json
+  images/
+    crop.webp ...
+```
+
+1. 画像を `assets/hair-reference/images/<optionId>.webp`（正方形）として置きます。
+2. `manifest.json` に1件追加します。`fieldId` は `baseCut`、`optionId` は `data/hair.js` などにある既存の選択肢IDです。
+
+```json
+{ "fieldId": "baseCut", "optionId": "hime", "labelJa": "姫カット", "descriptionJa": "短い説明", "image": "images/hime.webp" }
+```
+
+辞書にないID・ほかの項目・不正な画像パス・重複は表示しません。`labelJa` が辞書と違う場合は辞書の名前を表示します。追加後は `npm test` の対応チェック（9件の一覧や件数の期待値）も合わせて更新してください。
+
 ## 高度な設定（Markdown出力・HEXカラー指定）
 
 「外見設計」の冒頭にある **高度な設定** をONにすると、次の2つを個別に有効化できます。初期値はOFFで、OFFの間は従来の画面・操作・出力のままです。
@@ -174,7 +201,7 @@ npm test
 
 データ整合性、状態、旧形式正規化、生成、診断、保存、代表キャラクター5例、静的なUI要件を検査します。顔IDの保存／適用／リセット、レイヤー分離、矛盾、左右指定、JSON、共有の身体特徴維持、色の優先順位と保存、年齢語句の置換、追加髪型を検査します。`tests/legacy-fixtures.json` は改修前のmainから取得した6ケース・8種類の出力で、今回要求された年齢語句の置換を除き、従来の出力が一致することを検査します。高度な設定は `tests/advanced-tests.js` で、初期OFFと表示条件、HEXの正規化と拒否、色名との併記、左右の瞳・グラデーション・単色の優先順位、Markdownの見出し順・重複・除外・左右指定、旧JSONの移行と新JSONの往復、顔IDの瞳HEX、そしてHEXを設定しても従来の出力が変わらないことを検査します。`tests.html` ではブラウザのスモークテストも実行できます。
 
-任意の実ブラウザ検証は、開発環境にPlaywrightとChromeを用意して `node tests/browser-tests.cjs` を実行します。別の場所にあるPlaywrightは環境変数 `CAW_PLAYWRIGHT_PATH` で指定できます。アプリ本体と通常の `npm test` に外部依存は不要です。サイトアイコンは `tests/icon-tests.js`（`npm test` に含む）で参照先・サイズ・透明なしを、`node tests/icon-browser-tests.cjs` でGitHub Pagesと同じサブパスに置いた時に全アイコンが404にならないことを確認します。HEXカラーピッカーの表示は `node tests/hex-dialog-browser-tests.cjs` で、色名未選択・色名選択済み・HEX設定済みの3条件と、320〜390px幅・低い画面・横向き・キーボード表示（見える範囲を縮めて再現）で、ヘッダーと下部ボタンが見える範囲に収まり実際にタップできることを確認します。自動保存は `node tests/autosave-browser-tests.cjs` で、180msの遅延保存、ページが隠れた・閉じた・再読込した直後の保存、入力途中の値、変更がない時に書き込まないこと、保存失敗時の表示と再試行を確認します。タブの切り替えは `node tests/view-tabs-browser-tests.cjs` で、初期表示、ARIAとキーボード操作、切り替えで保存データと描画が変わらないこと、両タブのデータ共有、顔ID適用の反映、スクロール位置、固定タブバー、各画面幅を確認します。高度な設定のブラウザ検証は `node tests/advanced-browser-tests.cjs` で、スイッチの表示切替と再読込後の復元、HEX入力とピッカーの同期、出力形式の切替とコピー、顔ID、JSON往復、320/375/390/768/1280pxでの横はみ出し・タップ領域・ピッカーの画面内表示を確認します。ブラウザ検証は一時プロファイルとローカルサーバーを使い、旧JSON、レイヤー変更、自動保存と再読込、保存／適用／リセット、JSONの書出し・読込、比較、プリセット、確認ビュー、320/375/768/1280pxでの横はみ出しと実行時エラーを確認します。
+任意の実ブラウザ検証は、開発環境にPlaywrightとChromeを用意して `node tests/browser-tests.cjs` を実行します。別の場所にあるPlaywrightは環境変数 `CAW_PLAYWRIGHT_PATH` で指定できます。アプリ本体と通常の `npm test` に外部依存は不要です。髪型参考一覧は `tests/hair-reference-tests.js`（`npm test` に含む）でmanifestと `baseCut` の対応・画像ファイル・未作成画像を出さないことを、`node tests/hair-reference-browser-tests.cjs` で9画像の読込と表示順、320〜1280pxの表示、戻った後のデータと位置を確認します。サイトアイコンは `tests/icon-tests.js`（`npm test` に含む）で参照先・サイズ・透明なしを、`node tests/icon-browser-tests.cjs` でGitHub Pagesと同じサブパスに置いた時に全アイコンが404にならないことを確認します。HEXカラーピッカーの表示は `node tests/hex-dialog-browser-tests.cjs` で、色名未選択・色名選択済み・HEX設定済みの3条件と、320〜390px幅・低い画面・横向き・キーボード表示（見える範囲を縮めて再現）で、ヘッダーと下部ボタンが見える範囲に収まり実際にタップできることを確認します。自動保存は `node tests/autosave-browser-tests.cjs` で、180msの遅延保存、ページが隠れた・閉じた・再読込した直後の保存、入力途中の値、変更がない時に書き込まないこと、保存失敗時の表示と再試行を確認します。タブの切り替えは `node tests/view-tabs-browser-tests.cjs` で、初期表示、ARIAとキーボード操作、切り替えで保存データと描画が変わらないこと、両タブのデータ共有、顔ID適用の反映、スクロール位置、固定タブバー、各画面幅を確認します。高度な設定のブラウザ検証は `node tests/advanced-browser-tests.cjs` で、スイッチの表示切替と再読込後の復元、HEX入力とピッカーの同期、出力形式の切替とコピー、顔ID、JSON往復、320/375/390/768/1280pxでの横はみ出し・タップ領域・ピッカーの画面内表示を確認します。ブラウザ検証は一時プロファイルとローカルサーバーを使い、旧JSON、レイヤー変更、自動保存と再読込、保存／適用／リセット、JSONの書出し・読込、比較、プリセット、確認ビュー、320/375/768/1280pxでの横はみ出しと実行時エラーを確認します。
 
 ## GitHub Pages
 
@@ -194,6 +221,8 @@ npm test
 
 ```text
 index.html / styles.css / app.js / preset-ui.js / face-ui.js / view-tabs.js
+hair-reference.html / hair-reference.js / hair-reference.css
+assets/hair-reference/  manifest.json / images/*.webp
 favicon.ico / apple-touch-icon.png / site.webmanifest
 icons/
   favicon-16.png / favicon-32.png / icon-192.png / icon-512.png
@@ -212,6 +241,7 @@ tests/
   advanced-tests.js / advanced-browser-tests.cjs
   view-tabs-browser-tests.cjs / autosave-browser-tests.cjs / hex-dialog-browser-tests.cjs
   icon-tests.js / icon-browser-tests.cjs
+  hair-reference-tests.js / hair-reference-browser-tests.cjs
 tests.html
 .github/workflows/deploy-pages.yml
 ```
