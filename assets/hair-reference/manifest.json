@@ -61,5 +61,68 @@
     "labelJa": "ストレートロング",
     "descriptionJa": "まっすぐな長髪",
     "image": "images/straight.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "ponytail",
+    "labelJa": "ポニーテール",
+    "descriptionJa": "後頭部の中ほどで一つに結ぶ",
+    "image": "images/ponytail.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "high_ponytail",
+    "labelJa": "高いポニーテール",
+    "descriptionJa": "頭の高い位置で一つに結ぶ",
+    "image": "images/high_ponytail.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "low_ponytail",
+    "labelJa": "低いポニーテール",
+    "descriptionJa": "襟足付近の低い位置で一つに結ぶ",
+    "image": "images/low_ponytail.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "side_ponytail",
+    "labelJa": "サイドポニーテール",
+    "descriptionJa": "左右どちらかに寄せて一つに結ぶ",
+    "image": "images/side_ponytail.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "twin_tails",
+    "labelJa": "ツインテール",
+    "descriptionJa": "左右の高めの位置で二つに結ぶ",
+    "image": "images/twin_tails.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "low_twin_tails",
+    "labelJa": "低いツインテール",
+    "descriptionJa": "左右の低い位置で二つに結ぶ",
+    "image": "images/low_twin_tails.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "twin_braids",
+    "labelJa": "ツイン三つ編み",
+    "descriptionJa": "左右二本の三つ編みにする",
+    "image": "images/twin_braids.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "double_buns",
+    "labelJa": "ツインお団子",
+    "descriptionJa": "左右二つのお団子にまとめる",
+    "image": "images/double_buns.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "half_up",
+    "labelJa": "ハーフアップ",
+    "descriptionJa": "上半分だけを後ろで結び、下半分は下ろす",
+    "image": "images/half_up.webp"
   }
 ]
