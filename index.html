@@ -48,9 +48,12 @@
       <p>外見を組み立て、顔IDとして再利用。固定する特徴と変える特徴を分けて、PixAI・顔LoRA用のプロンプトも作れます。選択内容はこの端末へ自動保存されます。</p>
     </section>
 
-    <section class="section" aria-labelledby="preset-title">
-      <div class="section-heading"><div><p class="eyebrow">STARTING POINTS</p><h2 id="preset-title">部分プリセット</h2></div><p>関連項目だけをまとめて仮入力します。適用後も一つずつ変更できます。</p></div>
-      <div id="preset-groups" class="preset-groups"></div>
+    <section class="section preset-section" aria-labelledby="preset-title">
+      <div class="preset-heading"><p class="eyebrow">STARTING POINTS</p><h2 id="preset-title"><button type="button" class="preset-toggle" id="preset-toggle" aria-expanded="false" aria-controls="preset-body"><span class="preset-toggle-title">部分プリセット</span><span class="preset-toggle-action"><span class="preset-toggle-label">開く</span><span class="preset-chevron" aria-hidden="true"></span></span></button></h2></div>
+      <div id="preset-body" class="preset-body" hidden>
+        <p class="preset-lead">関連項目だけをまとめて仮入力します。適用後も一つずつ変更できます。</p>
+        <div id="preset-groups" class="preset-groups"></div>
+      </div>
     </section>
 
 

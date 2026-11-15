@@ -19,7 +19,7 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+decodeU
   assert.deepEqual(await tabState(),[['true',0,false],['false',-1,true]],'Design tab is shown first');
   assert.equal(await page.locator('#view-tabs').getAttribute('role'),'tablist');assert.equal(await page.locator('#tab-face').getAttribute('aria-controls'),'view-face');assert.equal(await page.locator('#view-face').getAttribute('aria-labelledby'),'tab-face');
   assert.deepEqual(await page.evaluate(()=>{const ids=Array.from(document.querySelectorAll('[id]')).map(e=>e.id);return ids.filter((x,i)=>ids.indexOf(x)!==i);}),[],'No duplicate ids after rendering');
-  for(const sel of ['#preset-groups','#advanced-settings','#accordions','#diagnostics','#outputs','#design-name'])assert(await page.locator(sel).isVisible(),'Design tab shows '+sel);
+  for(const sel of ['#preset-toggle','#advanced-settings','#accordions','#diagnostics','#outputs','#design-name'])assert(await page.locator(sel).isVisible(),'Design tab shows '+sel);
   for(const sel of ['#face-title','#face-layers','#face-outputs','[data-face-save]'])assert(await page.locator(sel).isHidden(),'Face area hidden on design tab: '+sel);
   const tabBox=await page.locator('#view-tabs').boundingBox();assert(tabBox.y<260,'Tabs are near the top of the page: '+tabBox.y);
 

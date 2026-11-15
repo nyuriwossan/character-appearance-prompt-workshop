@@ -15,5 +15,9 @@
   function normalizeUi(raw){var x=raw&&typeof raw==='object'?raw:{};return {advanced:x.advanced===true,markdown:x.markdown===true,hex:x.hex===true,format:FORMATS.indexOf(x.format)>=0?x.format:null,scope:SCOPES.indexOf(x.scope)>=0?x.scope:'detailed'};}
   function loadUi(){return normalizeUi(get(UI,null));}
   function saveUi(x){var v=normalizeUi(x);try{put(UI,v);}catch(e){}return v;}
-  CAW.storage={loadDraft:loadDraft,saveDraft:saveDraft,list:list,save:save,remove:remove,duplicate:duplicate,libraryJson:libraryJson,keys:{draft:KEY,library:LIB,ui:UI},loadUi:loadUi,saveUi:saveUi,normalizeUi:normalizeUi};
+  // 部分プリセットの開閉。端末のUI設定として専用のキーに置く（外見データ・JSON・高度な設定とは別）。初回は閉じる。
+  var PRESET_UI='caw_ui_presets_v1';
+  function loadPresetsOpen(){var v=get(PRESET_UI,null);return !!(v&&v.open===true);}
+  function savePresetsOpen(open){try{put(PRESET_UI,{open:open===true});}catch(e){}return open===true;}
+  CAW.storage={loadDraft:loadDraft,saveDraft:saveDraft,list:list,save:save,remove:remove,duplicate:duplicate,libraryJson:libraryJson,keys:{draft:KEY,library:LIB,ui:UI,presetUi:PRESET_UI},loadPresetsOpen:loadPresetsOpen,savePresetsOpen:savePresetsOpen,loadUi:loadUi,saveUi:saveUi,normalizeUi:normalizeUi};
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -158,5 +158,9 @@
   }
   document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('[data-reference-link]');if(a)rememberPosition(a.dataset.referenceLink);});
   root.addEventListener('pageshow',function(e){if(e.persisted)takePosition();});
+  // 部分プリセットの折りたたみ。表示を切り替えるだけで、プリセットの描画・適用・外見データには触れない。
+  function setPresetsOpen(open){var b=$('#preset-toggle');b.setAttribute('aria-expanded',String(open));$('#preset-body').hidden=!open;$('.preset-toggle-label',b).textContent=open?'閉じる':'開く';}
+  $('#preset-toggle').addEventListener('click',function(){setPresetsOpen(CAW.storage.savePresetsOpen($('#preset-toggle').getAttribute('aria-expanded')!=='true'));});
+  setPresetsOpen(CAW.storage.loadPresetsOpen());
   state=CAW.storage.loadDraft();CAW.advancedUi.init({get:function(){return state;},set:function(s){state=s;renderAll();},update:function(s){state=s;refreshSelectResults();},toast:toast});renderPresets();renderAll();updateBackToTop();restorePosition(takePosition());
 })(window);

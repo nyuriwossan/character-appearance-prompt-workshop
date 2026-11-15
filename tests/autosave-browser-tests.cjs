@@ -64,7 +64,7 @@ const SHOW=`(()=>{delete document.visibilityState;delete document.hidden;documen
 
   // 8. 保存データの形式は従来どおり（schema 0.3、既存キー）。読込済みの旧データの内容も保持。
   const d=await draft();assert.equal(d.schemaVersion,'0.3');assert.equal(d.faceProfile.name,'すぐ閉じる顔');assert.deepEqual(d.hexColors,{});
-  assert(await page.evaluate(()=>Object.keys(localStorage).every(k=>['caw_draft_v01','caw_library_v01','caw_face_library_v1','caw_ui_settings_v1'].includes(k))),'No new storage keys');
+  assert(await page.evaluate(()=>Object.keys(localStorage).every(k=>['caw_draft_v01','caw_library_v01','caw_face_library_v1','caw_ui_settings_v1','caw_ui_presets_v1'].includes(k))),'No new storage keys');
 
   assert.deepEqual(errors,[],'No browser runtime errors');console.log('PASS auto-save: 180ms debounce kept, immediate save on visibilitychange/pagehide, reload/close right after a change, focused name and free tags, no write without changes or on tab switch, failure handling and retry, storage format unchanged; no page errors');
 }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}})().catch(err=>{console.error(err);process.exitCode=1;});
