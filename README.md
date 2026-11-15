@@ -174,7 +174,7 @@ npm test
 
 データ整合性、状態、旧形式正規化、生成、診断、保存、代表キャラクター5例、静的なUI要件を検査します。顔IDの保存／適用／リセット、レイヤー分離、矛盾、左右指定、JSON、共有の身体特徴維持、色の優先順位と保存、年齢語句の置換、追加髪型を検査します。`tests/legacy-fixtures.json` は改修前のmainから取得した6ケース・8種類の出力で、今回要求された年齢語句の置換を除き、従来の出力が一致することを検査します。高度な設定は `tests/advanced-tests.js` で、初期OFFと表示条件、HEXの正規化と拒否、色名との併記、左右の瞳・グラデーション・単色の優先順位、Markdownの見出し順・重複・除外・左右指定、旧JSONの移行と新JSONの往復、顔IDの瞳HEX、そしてHEXを設定しても従来の出力が変わらないことを検査します。`tests.html` ではブラウザのスモークテストも実行できます。
 
-任意の実ブラウザ検証は、開発環境にPlaywrightとChromeを用意して `node tests/browser-tests.cjs` を実行します。別の場所にあるPlaywrightは環境変数 `CAW_PLAYWRIGHT_PATH` で指定できます。アプリ本体と通常の `npm test` に外部依存は不要です。HEXカラーピッカーの表示は `node tests/hex-dialog-browser-tests.cjs` で、色名未選択・色名選択済み・HEX設定済みの3条件と、320〜390px幅・低い画面・横向き・キーボード表示（見える範囲を縮めて再現）で、ヘッダーと下部ボタンが見える範囲に収まり実際にタップできることを確認します。自動保存は `node tests/autosave-browser-tests.cjs` で、180msの遅延保存、ページが隠れた・閉じた・再読込した直後の保存、入力途中の値、変更がない時に書き込まないこと、保存失敗時の表示と再試行を確認します。タブの切り替えは `node tests/view-tabs-browser-tests.cjs` で、初期表示、ARIAとキーボード操作、切り替えで保存データと描画が変わらないこと、両タブのデータ共有、顔ID適用の反映、スクロール位置、固定タブバー、各画面幅を確認します。高度な設定のブラウザ検証は `node tests/advanced-browser-tests.cjs` で、スイッチの表示切替と再読込後の復元、HEX入力とピッカーの同期、出力形式の切替とコピー、顔ID、JSON往復、320/375/390/768/1280pxでの横はみ出し・タップ領域・ピッカーの画面内表示を確認します。ブラウザ検証は一時プロファイルとローカルサーバーを使い、旧JSON、レイヤー変更、自動保存と再読込、保存／適用／リセット、JSONの書出し・読込、比較、プリセット、確認ビュー、320/375/768/1280pxでの横はみ出しと実行時エラーを確認します。
+任意の実ブラウザ検証は、開発環境にPlaywrightとChromeを用意して `node tests/browser-tests.cjs` を実行します。別の場所にあるPlaywrightは環境変数 `CAW_PLAYWRIGHT_PATH` で指定できます。アプリ本体と通常の `npm test` に外部依存は不要です。サイトアイコンは `tests/icon-tests.js`（`npm test` に含む）で参照先・サイズ・透明なしを、`node tests/icon-browser-tests.cjs` でGitHub Pagesと同じサブパスに置いた時に全アイコンが404にならないことを確認します。HEXカラーピッカーの表示は `node tests/hex-dialog-browser-tests.cjs` で、色名未選択・色名選択済み・HEX設定済みの3条件と、320〜390px幅・低い画面・横向き・キーボード表示（見える範囲を縮めて再現）で、ヘッダーと下部ボタンが見える範囲に収まり実際にタップできることを確認します。自動保存は `node tests/autosave-browser-tests.cjs` で、180msの遅延保存、ページが隠れた・閉じた・再読込した直後の保存、入力途中の値、変更がない時に書き込まないこと、保存失敗時の表示と再試行を確認します。タブの切り替えは `node tests/view-tabs-browser-tests.cjs` で、初期表示、ARIAとキーボード操作、切り替えで保存データと描画が変わらないこと、両タブのデータ共有、顔ID適用の反映、スクロール位置、固定タブバー、各画面幅を確認します。高度な設定のブラウザ検証は `node tests/advanced-browser-tests.cjs` で、スイッチの表示切替と再読込後の復元、HEX入力とピッカーの同期、出力形式の切替とコピー、顔ID、JSON往復、320/375/390/768/1280pxでの横はみ出し・タップ領域・ピッカーの画面内表示を確認します。ブラウザ検証は一時プロファイルとローカルサーバーを使い、旧JSON、レイヤー変更、自動保存と再読込、保存／適用／リセット、JSONの書出し・読込、比較、プリセット、確認ビュー、320/375/768/1280pxでの横はみ出しと実行時エラーを確認します。
 
 ## GitHub Pages
 
@@ -194,6 +194,9 @@ npm test
 
 ```text
 index.html / styles.css / app.js / preset-ui.js / face-ui.js / view-tabs.js
+favicon.ico / apple-touch-icon.png / site.webmanifest
+icons/
+  favicon-16.png / favicon-32.png / icon-192.png / icon-512.png
 color-details.js / hex-color.js
 face-profile.js
 state.js / normalizer.js / generator.js / advisor.js / storage.js
@@ -208,6 +211,7 @@ tests/
   color-tests.js
   advanced-tests.js / advanced-browser-tests.cjs
   view-tabs-browser-tests.cjs / autosave-browser-tests.cjs / hex-dialog-browser-tests.cjs
+  icon-tests.js / icon-browser-tests.cjs
 tests.html
 .github/workflows/deploy-pages.yml
 ```
