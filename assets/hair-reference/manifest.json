@@ -124,5 +124,68 @@
     "labelJa": "ハーフアップ",
     "descriptionJa": "上半分だけを後ろで結び、下半分は下ろす",
     "image": "images/half_up.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "side_braid",
+    "labelJa": "サイド三つ編み",
+    "descriptionJa": "髪を片側へ寄せて三つ編みにする",
+    "image": "images/side_braid.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "fishtail",
+    "labelJa": "フィッシュボーン",
+    "descriptionJa": "細かな毛束を交差させる魚の骨状の編み目",
+    "image": "images/fishtail.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "french_braid",
+    "labelJa": "フレンチブレイド",
+    "descriptionJa": "髪を内側へ重ねながら頭皮に沿って編む",
+    "image": "images/french_braid.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "dutch_braid",
+    "labelJa": "ダッチブレイド",
+    "descriptionJa": "髪を下へくぐらせ編み目を立体的に浮かせる",
+    "image": "images/dutch_braid.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "crown_braid",
+    "labelJa": "編み込みの冠",
+    "descriptionJa": "頭の周囲を冠状に編み込む",
+    "image": "images/crown_braid.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "braided_bun",
+    "labelJa": "編み込みお団子",
+    "descriptionJa": "編んだ毛束をお団子状にまとめる",
+    "image": "images/braided_bun.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "half_up_bun",
+    "labelJa": "ハーフアップお団子",
+    "descriptionJa": "上半分だけをお団子にし、残りは下ろす",
+    "image": "images/half_up_bun.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "messy_bun",
+    "labelJa": "無造作なお団子",
+    "descriptionJa": "毛束をラフにまとめ、後れ毛を残す",
+    "image": "images/messy_bun.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "chignon",
+    "labelJa": "低いシニヨン",
+    "descriptionJa": "襟足付近で髪をすっきりまとめる",
+    "image": "images/chignon.webp"
   }
 ]
