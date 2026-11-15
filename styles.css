@@ -159,3 +159,9 @@ select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px so
 .hex-dialog .hex-sv{height:clamp(96px,24dvh,170px);min-height:96px}
 @media(max-height:560px){.hex-dialog .hex-dialog-head{padding:8px 14px 7px}.hex-dialog .hex-dialog-head .eyebrow{display:none}.hex-dialog .hex-dialog-head h2{font-size:16px}.hex-dialog .hex-dialog-body{gap:6px;padding-top:10px}.hex-dialog .hex-preview-swatch{width:40px;height:40px}.hex-dialog .hex-preview strong{font-size:16px}.hex-dialog .hex-dialog-actions{padding-top:8px}}
 @media(max-width:360px){.hex-dialog .hex-dialog-actions{padding-inline:10px;gap:6px}.hex-dialog .hex-dialog-actions .button{font-size:12px;padding-inline:4px}}
+
+/* 参考画像一覧へのリンク（髪型・カットの基本形） */
+.field-reference-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin:-2px 0 8px;padding:0 13px;border:1px solid var(--line);border-radius:11px;background:#fdfcf8;color:var(--deep);font-size:12.5px;font-weight:750;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.field-reference-link span{color:var(--accent);font-size:13px}
+.field-reference-link:hover{border-color:#cfcabf;background:#fff}
+.field-reference-link:focus-visible{outline:3px solid rgba(155,93,85,.4);outline-offset:2px}

@@ -6,7 +6,7 @@ const memory={};
 global.localStorage={getItem:k=>Object.prototype.hasOwnProperty.call(memory,k)?memory[k]:null,setItem:(k,v)=>{memory[k]=String(v);},removeItem:k=>{delete memory[k];}};
 [
   'data/core.js','data/basic-face.js','data/eyes.js','data/features.js','data/hair.js','data/skin-body.js','data/marks.js','data/presets.js','data/appearance-details.js','data/rules.js',
-  'state.js','color-details.js','hex-color.js','face-profile.js','normalizer.js','generator.js','advanced-output.js','advisor.js','storage.js','preset-ui.js'
+  'state.js','color-details.js','hex-color.js','face-profile.js','normalizer.js','generator.js','advanced-output.js','advisor.js','storage.js','preset-ui.js','hair-reference.js'
 ].forEach(file=>vm.runInThisContext(fs.readFileSync(path.join(root,file),'utf8'),{filename:file}));
 let passed=0;
 function ok(value,message){if(!value)throw new Error(message);passed++;}
@@ -162,3 +162,4 @@ require('./face-tests.js');
 require('./color-tests.js');
 require('./advanced-tests.js');
 require('./icon-tests.js');
+require('./hair-reference-tests.js');
