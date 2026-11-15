@@ -187,5 +187,68 @@
     "labelJa": "低いシニヨン",
     "descriptionJa": "襟足付近で髪をすっきりまとめる",
     "image": "images/chignon.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "undercut",
+    "labelJa": "アンダーカット",
+    "descriptionJa": "側面・後頭部を短く刈り、上の髪を残す",
+    "image": "images/undercut.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "two_block",
+    "labelJa": "ツーブロック",
+    "descriptionJa": "上の髪と短い側面を段差で分ける",
+    "image": "images/two_block.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "hime",
+    "labelJa": "姫カット",
+    "descriptionJa": "長髪と直線的な前髪・顔横の短い毛束",
+    "image": "images/hime.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "jellyfish",
+    "labelJa": "クラゲカット",
+    "descriptionJa": "丸い上段と長く伸びた下段の二層",
+    "image": "images/jellyfish.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "butterfly",
+    "labelJa": "バタフライカット",
+    "descriptionJa": "顔周りに大きな段を入れた長髪",
+    "image": "images/butterfly.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "asym_bob",
+    "labelJa": "アシンメトリーボブ",
+    "descriptionJa": "左右の長さが異なるボブ",
+    "image": "images/asym_bob.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "a_line_bob",
+    "labelJa": "前下がりボブ",
+    "descriptionJa": "後ろから前へ向かって長くなるボブ",
+    "image": "images/a_line_bob.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "inverted_bob",
+    "labelJa": "後ろ短めのボブ",
+    "descriptionJa": "後頭部に段差と丸みをつけたボブ",
+    "image": "images/inverted_bob.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "french_bob",
+    "labelJa": "フレンチボブ",
+    "descriptionJa": "顎あたりの短めのボブと前髪",
+    "image": "images/french_bob.webp"
   }
 ]
