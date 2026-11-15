@@ -6,9 +6,9 @@ const root=path.resolve(__dirname,'..'),BASE='/character-appearance-prompt-works
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.ico':'image/x-icon','.webp':'image/webp','.webmanifest':'application/manifest+json'};
 const server=http.createServer((req,res)=>{const u=decodeURIComponent(req.url.split('?')[0]);if(!u.startsWith(BASE)){res.writeHead(404);res.end();return;}const p=path.resolve(root,'.'+(u===BASE?'/index.html':'/'+u.slice(BASE.length)));if(!p.startsWith(root+path.sep)){res.writeHead(403);res.end();return;}fs.readFile(p,(err,body)=>{res.writeHead(err?404:200,{'Content-Type':mime[path.extname(p)]||'application/octet-stream'});res.end(err?'Not found':body);});});
 // 表示順は外見設計の選択ボタンと同じ辞書の順。
-const ORDER=['crop','pixie','mushroom','layered_short','bob','lob','wolf','shag','straight','ponytail','low_ponytail','high_ponytail','side_ponytail','twin_tails','low_twin_tails','twin_braids','double_buns','half_up','half_up_bun','side_braid','fishtail','french_braid','dutch_braid','crown_braid','braided_bun','messy_bun','chignon'];
-const NAMES=['クロップ','ピクシーカット','マッシュ','レイヤーショート','ボブ','ロングボブ','ウルフカット','シャギーカット','ストレートロング','ポニーテール','低いポニーテール','高いポニーテール','サイドポニーテール','ツインテール','低いツインテール','ツイン三つ編み','ツインお団子','ハーフアップ','ハーフアップお団子','サイド三つ編み','フィッシュボーン','フレンチブレイド','ダッチブレイド','編み込みの冠','編み込みお団子','無造作なお団子','低いシニヨン'];
-const DESCS=['短く整えた髪','短い毛束と軽い動き','丸いシルエット','短髪に段差を入れた形','あご付近の長さ','肩に近い長めのボブ','上は短め・襟足は長め','毛先を軽く散らした形','まっすぐな長髪','後頭部の中ほどで一つに結ぶ','襟足付近の低い位置で一つに結ぶ','頭の高い位置で一つに結ぶ','左右どちらかに寄せて一つに結ぶ','左右の高めの位置で二つに結ぶ','左右の低い位置で二つに結ぶ','左右二本の三つ編みにする','左右二つのお団子にまとめる','上半分だけを後ろで結び、下半分は下ろす','上半分だけをお団子にし、残りは下ろす','髪を片側へ寄せて三つ編みにする','細かな毛束を交差させる魚の骨状の編み目','髪を内側へ重ねながら頭皮に沿って編む','髪を下へくぐらせ編み目を立体的に浮かせる','頭の周囲を冠状に編み込む','編んだ毛束をお団子状にまとめる','毛束をラフにまとめ、後れ毛を残す','襟足付近で髪をすっきりまとめる'];
+const ORDER=['crop','pixie','mushroom','layered_short','bob','lob','wolf','shag','straight','undercut','ponytail','low_ponytail','high_ponytail','side_ponytail','twin_tails','low_twin_tails','twin_braids','double_buns','half_up','half_up_bun','side_braid','fishtail','french_braid','dutch_braid','crown_braid','braided_bun','messy_bun','chignon','two_block','hime','jellyfish','butterfly','asym_bob','a_line_bob','inverted_bob','french_bob'];
+const NAMES=['クロップ','ピクシーカット','マッシュ','レイヤーショート','ボブ','ロングボブ','ウルフカット','シャギーカット','ストレートロング','アンダーカット','ポニーテール','低いポニーテール','高いポニーテール','サイドポニーテール','ツインテール','低いツインテール','ツイン三つ編み','ツインお団子','ハーフアップ','ハーフアップお団子','サイド三つ編み','フィッシュボーン','フレンチブレイド','ダッチブレイド','編み込みの冠','編み込みお団子','無造作なお団子','低いシニヨン','ツーブロック','姫カット','クラゲカット','バタフライカット','アシンメトリーボブ','前下がりボブ','後ろ短めのボブ','フレンチボブ'];
+const DESCS=['短く整えた髪','短い毛束と軽い動き','丸いシルエット','短髪に段差を入れた形','あご付近の長さ','肩に近い長めのボブ','上は短め・襟足は長め','毛先を軽く散らした形','まっすぐな長髪','側面・後頭部を短く刈り、上の髪を残す','後頭部の中ほどで一つに結ぶ','襟足付近の低い位置で一つに結ぶ','頭の高い位置で一つに結ぶ','左右どちらかに寄せて一つに結ぶ','左右の高めの位置で二つに結ぶ','左右の低い位置で二つに結ぶ','左右二本の三つ編みにする','左右二つのお団子にまとめる','上半分だけを後ろで結び、下半分は下ろす','上半分だけをお団子にし、残りは下ろす','髪を片側へ寄せて三つ編みにする','細かな毛束を交差させる魚の骨状の編み目','髪を内側へ重ねながら頭皮に沿って編む','髪を下へくぐらせ編み目を立体的に浮かせる','頭の周囲を冠状に編み込む','編んだ毛束をお団子状にまとめる','毛束をラフにまとめ、後れ毛を残す','襟足付近で髪をすっきりまとめる','上の髪と短い側面を段差で分ける','長髪と直線的な前髪・顔横の短い毛束','丸い上段と長く伸びた下段の二層','顔周りに大きな段を入れた長髪','左右の長さが異なるボブ','後ろから前へ向かって長くなるボブ','後頭部に段差と丸みをつけたボブ','顎あたりの短めのボブと前髪'];
 (async()=>{let browser;try{
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const app='http://127.0.0.1:'+server.address().port+BASE,ref=app+'hair-reference.html';
   browser=await chromium.launch({channel:'chrome',headless:true});const context=await browser.newContext({hasTouch:true});
@@ -35,18 +35,18 @@ const DESCS=['短く整えた髪','短い毛束と軽い動き','丸いシルエ
   await link.scrollIntoViewIfNeeded();await page.evaluate(()=>scrollBy(0,-180));const anchorTop=Math.round((await link.boundingBox()).y);await page.waitForTimeout(100);
 
   // 参考一覧へ。
-  await link.click();await page.waitForURL(ref);await page.waitForFunction(()=>document.querySelectorAll('.reference-card').length===27);
+  await link.click();await page.waitForURL(ref);await page.waitForFunction(()=>document.querySelectorAll('.reference-card').length===36);
   assert.equal(await page.locator('#reference-title').textContent(),'髪型参考一覧');assert((await page.title()).startsWith('髪型参考一覧'));
-  assert.equal(await page.locator('#reference-count').textContent(),'現在27種類の参考画像を掲載しています（「髪型・カットの基本形」全47種類のうち）。今後追加していく予定です。');
+  assert.equal(await page.locator('#reference-count').textContent(),'現在36種類の参考画像を掲載しています（「髪型・カットの基本形」全47種類のうち）。今後追加していく予定です。');
   assert((await page.locator('.reference-note').textContent()).includes('模式的なイラスト'));
   assert.deepEqual(await page.locator('.reference-card').evaluateAll(els=>els.map(e=>e.dataset.optionId)),ORDER,'Display order');
   assert.deepEqual(await page.locator('.reference-name').allTextContents(),NAMES,'Names');
   assert.deepEqual(await page.locator('.reference-desc').allTextContents(),DESCS,'Descriptions');
   assert.deepEqual(await page.locator('.reference-card img').evaluateAll(els=>els.map(i=>[i.dataset.optionId,new URL(i.src).pathname.split('/').pop(),i.alt,i.loading])),ORDER.map((id,k)=>[id,id+'.webp',NAMES[k]+'の参考イラスト','lazy']),'Image ↔ name mapping, lazy loading');
-  assert.equal(await page.locator('img').count(),27,'Only the 27 prepared images are shown');
+  assert.equal(await page.locator('img').count(),36,'Only the 36 prepared images are shown');
   // 画像準備中の38種類は名前だけ（画像なし）。
-  const pending=page.locator('.reference-pending');assert.equal(await pending.locator('summary').textContent(),'画像準備中の髪型（20種類）');assert.equal(await pending.evaluate(d=>d.open),false,'Collapsed by default');
-  const restIds=await pending.locator('li').evaluateAll(els=>els.map(e=>e.dataset.optionId));assert.equal(restIds.length,20);assert(restIds.every(id=>!ORDER.includes(id)));assert.equal(await pending.locator('img').count(),0);
+  const pending=page.locator('.reference-pending');assert.equal(await pending.locator('summary').textContent(),'画像準備中の髪型（11種類）');assert.equal(await pending.evaluate(d=>d.open),false,'Collapsed by default');
+  const restIds=await pending.locator('li').evaluateAll(els=>els.map(e=>e.dataset.optionId));assert.equal(restIds.length,11);assert(restIds.every(id=>!ORDER.includes(id)));assert.equal(await pending.locator('img').count(),0);
   // 9枚すべて読み込まれ、正方形・同じ大きさで並ぶ（遅延読み込みなので順に表示させる）。
   for(const id of ORDER){const c=page.locator('.reference-card[data-option-id="'+id+'"] img');await c.scrollIntoViewIfNeeded();await c.evaluate(i=>i.complete&&i.naturalWidth?0:new Promise((ok,ng)=>{i.onload=ok;i.onerror=()=>ng(new Error('load '+i.src));}));assert.deepEqual(await c.evaluate(i=>[i.naturalWidth,i.naturalHeight]),[418,418],'Loaded: '+id);}
   const qaW={};
@@ -74,19 +74,19 @@ const DESCS=['短く整えた髪','短い毛束と軽い動き','丸いシルエ
   }
   await checkBack('back link');
   // ブラウザの「戻る」（iPhone Safari のスワイプ・戻るボタン）。
-  await page.locator('[data-reference-link="baseCut"]').click();await page.waitForURL(ref);await page.waitForFunction(()=>document.querySelectorAll('.reference-card').length===27);await page.goBack();await page.waitForURL(app);await saved();await checkBack('browser back');
+  await page.locator('[data-reference-link="baseCut"]').click();await page.waitForURL(ref);await page.waitForFunction(()=>document.querySelectorAll('.reference-card').length===36);await page.goBack();await page.waitForURL(app);await saved();await checkBack('browser back');
   // 戻るキャッシュが使われず、読み込み直しになった場合（Safari が戻るキャッシュを捨てた時など）。
   await page.locator('[data-reference-link="baseCut"]').click();await page.waitForURL(ref);await page.goto(app);await saved();await checkBack('reload on return');
   // 普通に開き直した時は位置を復元しない（印が残らない）。
   await page.evaluate(()=>scrollTo(0,0));await page.reload();await saved();assert(await page.evaluate(()=>scrollY)<50,'Normal reload does not jump');
 
   // 参考一覧を直接開いた場合も「外見設計に戻る」で外見設計へ。データは初期化しない。
-  const direct=await context.newPage();direct.on('pageerror',e=>errors.push(e.message));await direct.setViewportSize({width:375,height:700});await direct.goto(ref);await direct.waitForFunction(()=>document.querySelectorAll('.reference-card').length===27);
+  const direct=await context.newPage();direct.on('pageerror',e=>errors.push(e.message));await direct.setViewportSize({width:375,height:700});await direct.goto(ref);await direct.waitForFunction(()=>document.querySelectorAll('.reference-card').length===36);
   await direct.locator('.reference-bottom [data-reference-back]').click();await direct.waitForURL(app);await direct.waitForFunction(()=>document.getElementById('save-status').textContent==='自動保存済み');
   assert.equal(await direct.evaluate(()=>localStorage.getItem('caw_draft_v01')),before,'Direct visit then back keeps saved data');assert.equal(await direct.locator('#design-name').inputValue(),'参考画像確認');await direct.close();
 
   // 画像が読み込めない場合の代替表示／manifest が読めない場合の案内。
-  const broken=await context.newPage();await broken.route('**/images/wolf.webp',r=>r.fulfill({status:404,body:''}));await broken.setViewportSize({width:320,height:700});await broken.goto(ref);await broken.waitForFunction(()=>document.querySelectorAll('.reference-card').length===27);
+  const broken=await context.newPage();await broken.route('**/images/wolf.webp',r=>r.fulfill({status:404,body:''}));await broken.setViewportSize({width:320,height:700});await broken.goto(ref);await broken.waitForFunction(()=>document.querySelectorAll('.reference-card').length===36);
   const w=broken.locator('.reference-card[data-option-id="wolf"]');await w.scrollIntoViewIfNeeded();await broken.waitForFunction(()=>document.querySelector('.reference-card[data-option-id="wolf"]').dataset.failed==='true');
   assert.equal(await w.locator('.reference-fallback').textContent(),'画像を読み込めませんでした');assert.equal(await w.locator('.reference-name').textContent(),'ウルフカット','Name still shown');assert(await broken.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   const fb=await w.locator('.reference-image').boundingBox(),ob=await broken.locator('.reference-card[data-option-id="shag"] .reference-image').boundingBox();assert(Math.abs(fb.width-ob.width)<=1&&Math.abs(fb.height-ob.height)<=1,'Fallback keeps the square');await broken.close();
@@ -94,5 +94,5 @@ const DESCS=['短く整えた髪','短い毛束と軽い動き','丸いシルエ
   assert.equal(await nomf.locator('#reference-count').textContent(),'参考画像の一覧を読み込めませんでした。');assert.equal(await nomf.locator('img').count(),0);await nomf.close();
 
   assert.deepEqual(bad.filter(u=>!/wolf\.webp|manifest\.json/.test(u)),[],'No 404 in the normal flow');assert.deepEqual(errors,[],'No page errors');
-  console.log('PASS hair reference: link under baseCut only (advanced ON/OFF), 27 images load in order with correct names, 20 pending names without images, square tiles 2/3/4 columns, 320/375/390/768/1280 no overflow, back link / browser back / reload-on-return keep data, hairstyle, accordions and position, fallbacks for missing image and manifest; no page errors');
+  console.log('PASS hair reference: link under baseCut only (advanced ON/OFF), 36 images load in order with correct names, 11 pending names without images, square tiles 2/3/4 columns, 320/375/390/768/1280 no overflow, back link / browser back / reload-on-return keep data, hairstyle, accordions and position, fallbacks for missing image and manifest; no page errors');
 }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}})().catch(err=>{console.error(err);process.exitCode=1;});
