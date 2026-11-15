@@ -250,5 +250,82 @@
     "labelJa": "フレンチボブ",
     "descriptionJa": "顎あたりの短めのボブと前髪",
     "image": "images/french_bob.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "layered_long",
+    "labelJa": "ロングレイヤー",
+    "descriptionJa": "長い髪に段差を入れ、毛先に軽さと動きを出す",
+    "image": "images/layered_long.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "bun",
+    "labelJa": "まとめ髪",
+    "descriptionJa": "髪をひとまとめにしてお団子状に結ぶ",
+    "image": "images/bun.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "braid",
+    "labelJa": "編み髪",
+    "descriptionJa": "髪を毛束に分けて編み下ろす",
+    "image": "images/braid.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "slicked_back",
+    "labelJa": "オールバック",
+    "descriptionJa": "前髪を後方へなでつけ、額を出す",
+    "image": "images/slicked_back.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "pageboy",
+    "labelJa": "ページボーイ",
+    "descriptionJa": "丸く整えたシルエットと内巻きの毛先",
+    "image": "images/pageboy.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "pompadour",
+    "labelJa": "ポンパドール",
+    "descriptionJa": "前髪を大きく持ち上げて後方へ流す",
+    "image": "images/pompadour.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "quiff",
+    "labelJa": "クイッフ",
+    "descriptionJa": "前髪を立ち上げ、前方に毛束の動きをつける",
+    "image": "images/quiff.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "dreadlocks",
+    "labelJa": "ドレッドロックス",
+    "descriptionJa": "縄状にまとまった毛束が垂れる髪型",
+    "image": "images/dreadlocks.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "cornrows",
+    "labelJa": "コーンロウ",
+    "descriptionJa": "頭皮に沿って細い編み目を列状に作る",
+    "image": "images/cornrows.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "afro",
+    "labelJa": "アフロ",
+    "descriptionJa": "細かいカールで丸く大きなボリュームを作る",
+    "image": "images/afro.webp"
+  },
+  {
+    "fieldId": "baseCut",
+    "optionId": "bowl",
+    "labelJa": "ボウルカット",
+    "descriptionJa": "水平に切りそろえた前髪と丸い輪郭",
+    "image": "images/bowl.webp"
   }
 ]

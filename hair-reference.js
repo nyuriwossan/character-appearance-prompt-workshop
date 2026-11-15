@@ -37,7 +37,7 @@
       var have={};mine.forEach(function(e){have[e.option.id]=1;});var rest=f.options.filter(function(o){return !have[o.id];});
       if(rest.length){var d=el('details','reference-pending'),s=el('summary',null,'画像準備中の髪型（'+rest.length+'種類）'),ul=el('ul','reference-pending-list');rest.forEach(function(o){var li=el('li',null,o.labelJa);li.dataset.optionId=o.id;ul.appendChild(li);});d.appendChild(s);d.appendChild(el('p','reference-pending-note','これらの髪型は参考画像がまだありません。名前は外見設計の選択肢と同じです。'));d.appendChild(ul);sec.appendChild(d);}
       box.appendChild(sec);
-      $('reference-count').textContent='現在'+mine.length+'種類の参考画像を掲載しています（「'+f.labelJa+'」全'+f.options.length+'種類のうち）。今後追加していく予定です。';
+      $('reference-count').textContent=mine.length===f.options.length?'「'+f.labelJa+'」全'+f.options.length+'種類の参考画像を掲載しています。':'現在'+mine.length+'種類の参考画像を掲載しています（「'+f.labelJa+'」全'+f.options.length+'種類のうち）。今後追加していく予定です。';
     });
   }
   // 「外見設計に戻る」：外見設計から来た場合はブラウザの「戻る」と同じ動きにして、Safari の戻るキャッシュで画面をそのまま戻す。
